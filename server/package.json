@@ -2,7 +2,7 @@
   "name": "@chat-app/server",
   "version": "0.0.1",
   "private": true,
-  "main": "./src/app.ts",
+  "main": "./dist/bin/www.js",
   "scripts": {
     "dev": "tsx watch src/bin/www.ts",
     "build": "tsc",
