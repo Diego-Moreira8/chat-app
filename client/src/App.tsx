@@ -10,7 +10,7 @@ export function App() {
     setError(null);
 
     try {
-      const res = await fetch(import.meta.env.API_URL);
+      const res = await fetch(import.meta.env.VITE_API_URL);
 
       if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
 
