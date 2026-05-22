@@ -1,0 +1,69 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "server",
+      "type": "shell",
+      "command": "bash",
+      "icon": { "color": "terminal.ansiGreen", "id": "server" },
+      "options": {
+        "cwd": "/home/diego/chat-app/server"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "client",
+      "type": "shell",
+      "command": "bash",
+      "icon": { "color": "terminal.ansiMagenta", "id": "vm-small" },
+      "options": {
+        "cwd": "/home/diego/chat-app/client"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "shared",
+      "type": "shell",
+      "command": "bash",
+      "icon": { "color": "terminal.ansiBlue", "id": "database" },
+      "options": {
+        "cwd": "/home/diego/chat-app/packages/shared"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "Prisma Studio",
+      "type": "shell",
+      "command": "npm run studio",
+      "icon": { "color": "terminal.ansiCyan", "id": "database" },
+      "options": {
+        "cwd": "/home/diego/chat-app/packages/shared"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}

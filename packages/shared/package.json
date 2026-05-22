@@ -9,7 +9,7 @@
     "build": "prisma migrate dev && prisma generate && tsc",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
-    "studio": "prisma studio"
+    "studio": "prisma studio --browser none"
   },
   "devDependencies": {
     "@types/node": "^24.12.4",
