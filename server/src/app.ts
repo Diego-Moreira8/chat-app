@@ -3,9 +3,9 @@ import cors from "cors";
 import express from "express";
 import logger from "morgan";
 import { corsOptions } from "./config/cors";
+import { errorHandler, notFoundHandler } from "./controllers/errors";
 import { indexRouter } from "./routes/index";
 import { usersRouter } from "./routes/users";
-import { errorHandler, notFoundHandler } from "./controllers/errors";
 
 export const app = express();
 
@@ -15,6 +15,7 @@ export const app = express();
 app.use(cors(corsOptions));
 app.use(logger("dev"));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 /**

@@ -1,15 +1,6 @@
-import { prisma, User } from "@chat-app/shared";
 import express from "express";
+import * as usersController from "../controllers/users";
 
 export const usersRouter = express.Router();
 
-usersRouter.get("/", async (req, res, next) => {
-  const newUser = await prisma.user.create({
-    data: {
-      username: "test",
-      passwordHash: "123",
-    },
-  });
-
-  res.json({ user: newUser });
-});
+usersRouter.post("/", usersController.create);
