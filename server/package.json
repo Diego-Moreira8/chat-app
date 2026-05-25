@@ -5,9 +5,9 @@
   "main": "./dist/bin/www.js",
   "scripts": {
     "dev": "tsx watch src/bin/www.ts",
-    "build": "tsc",
+    "build": "tsc --project ./tsconfig.build.json",
     "start": "node dist/bin/www.js",
-    "test": "vitest",
+    "test": "vitest --reporter=verbose",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
@@ -28,7 +28,9 @@
     "@types/dotenv": "^6.1.1",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.12.4",
+    "@types/supertest": "^7.2.0",
     "@vitest/coverage-v8": "^4.1.7",
+    "supertest": "^7.2.2",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
     "vitest": "^4.1.7"
