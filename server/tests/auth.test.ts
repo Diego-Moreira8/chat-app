@@ -6,7 +6,7 @@ vi.mock("../src/services/users", () => ({
   create: vi.fn(),
 }));
 
-describe("POST /api/v1/users", () => {
+describe("POST /api/v1/auth/register", () => {
   const now = new Date();
   let response: request.Response;
 
@@ -17,7 +17,7 @@ describe("POST /api/v1/users", () => {
       createdAt: now,
     });
 
-    response = await request(app).post("/api/v1/users").send({
+    response = await request(app).post("/api/v1/auth/register").send({
       username: "test_username",
       password: "plain_text_password",
     });

@@ -5,7 +5,7 @@ import logger from "morgan";
 import { corsOptions } from "./config/cors";
 import { errorHandler, notFoundHandler } from "./controllers/errors";
 import { indexRouter } from "./routes/index";
-import { usersRouter } from "./routes/users";
+import { authRouter } from "./routes/auth";
 
 export const app = express();
 
@@ -22,7 +22,7 @@ app.use(cookieParser());
  * Endpoints.
  */
 app.use("/", indexRouter);
-app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/auth", authRouter);
 
 /**
  * Error handling.
