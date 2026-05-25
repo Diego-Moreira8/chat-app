@@ -18,6 +18,22 @@
       }
     },
     {
+      "label": "server testing",
+      "type": "shell",
+      "command": "npm run test",
+      "icon": { "color": "terminal.ansiGreen", "id": "server" },
+      "options": {
+        "cwd": "/home/diego/chat-app/server"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
       "label": "client",
       "type": "shell",
       "command": "bash",
@@ -50,7 +66,7 @@
       }
     },
     {
-      "label": "Prisma Studio",
+      "label": "prisma studio",
       "type": "shell",
       "command": "npm run studio",
       "icon": { "color": "terminal.ansiCyan", "id": "database" },

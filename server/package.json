@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch src/bin/www.ts",
     "build": "tsc",
-    "start": "node dist/bin/www.js"
+    "start": "node dist/bin/www.js",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@chat-app/shared": "^0.0.1",
@@ -26,7 +28,9 @@
     "@types/dotenv": "^6.1.1",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.12.4",
+    "@vitest/coverage-v8": "^4.1.7",
     "tsx": "^4.22.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }
