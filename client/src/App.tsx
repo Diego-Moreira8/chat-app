@@ -1,23 +1,55 @@
+import {
+  User,
+  type RegisterUserRequestBody,
+  type RegisterUserResponse,
+} from "@chat-app/shared/dist/validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { isAxiosError } from "axios";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
+import { api } from "./api/instance";
+import { Input } from "./components/ui/input";
 
 export function App() {
-  const [data, setData] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState("");
 
-  const fetchServer = async () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(User.register.request) });
+
+  const onSubmit: SubmitHandler<RegisterUserRequestBody> = async ({
+    username,
+    password,
+  }) => {
     setLoading(true);
-    setError(null);
+    setResult("");
 
     try {
-      const res = await fetch(import.meta.env.VITE_API_URL);
+      const response = await api.post<RegisterUserResponse>(
+        "/api/v1/auth/register",
+        { username, password },
+      );
 
-      if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
+      console.log(response.data);
+      setResult("Usuário criado!");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.response?.status && error.response.status >= 500) {
+          setResult("Houve um erro no servidor");
+          return;
+        }
 
-      const json = await res.json();
-      setData(json.message);
-    } catch (err) {
-      setError("Falha ao buscar dados. " + err);
+        if (error.response?.status === 400) {
+          setResult("Há um erro no formulário! Corrija e tente novamente.");
+          return;
+        }
+      }
+
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -25,12 +57,29 @@ export function App() {
 
   return (
     <>
-      <button type="button" onClick={fetchServer} disabled={loading}>
-        {loading ? "Carregando..." : "Buscar dados"}
-      </button>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {result && <p>{result}</p>}
 
-      <p>{data}</p>
-      {error && <p>{error}</p>}
+        <Input
+          type="text"
+          label="Nome de usuário"
+          registration={register("username")}
+          error={errors.username?.message}
+        />
+
+        <Input
+          type="password"
+          label="Senha"
+          registration={register("password")}
+          error={errors.password?.message}
+        />
+
+        <div>
+          <button type="submit" disabled={loading}>
+            Criar conta
+          </button>
+        </div>
+      </form>
     </>
   );
 }

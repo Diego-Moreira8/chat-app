@@ -9,7 +9,10 @@ export const register = async (
 ) => {
   const { username, password } = req.body;
 
-  const validationResult = User.register.safeParse({ username, password });
+  const validationResult = User.register.request.safeParse({
+    username,
+    password,
+  });
 
   if (!validationResult.success) {
     return res.status(400).json({ error: validationResult.error.issues });

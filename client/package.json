@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "@chat-app/shared": "^0.0.1",
+    "@hookform/resolvers": "^5.4.0",
+    "axios": "^1.16.1",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "react-hook-form": "^7.76.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
