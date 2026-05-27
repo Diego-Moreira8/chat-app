@@ -6,34 +6,50 @@ vi.mock("../src/services/users", () => ({
   create: vi.fn(),
 }));
 
-describe("POST /api/v1/auth/register", () => {
-  const now = new Date();
-  let response: request.Response;
+const endpoint = "/api/v1/auth/register";
 
-  beforeAll(async () => {
+describe(`POST ${endpoint}`, () => {
+  const now = new Date();
+
+  test("creates a valid user", async () => {
+    const validUsername = "valid-username";
+    const validPassword = "12345678";
+
     vi.mocked(usersService.create).mockResolvedValueOnce({
       id: 1,
-      username: "test_username",
+      username: validUsername,
       createdAt: now,
     });
 
-    response = await request(app).post("/api/v1/auth/register").send({
-      username: "test_username",
-      password: "plain_text_password",
+    const response = await request(app).post(endpoint).send({
+      username: validUsername,
+      password: validPassword,
     });
-  });
 
-  test("responds with 201 status code", () => {
     expect(response.status).toBe(201);
-  });
-
-  test("responds with a JSON containing the new user data without its password", () => {
     expect(response.body).toEqual({
       user: {
         id: 1,
-        username: "test_username",
+        username: validUsername,
         createdAt: now.toJSON(),
+        // No password or password hash
       },
     });
   });
+
+  test("responds with a 400 with invalid fields", async () => {
+    const invalidUsername = " -_  ";
+    const invalidPassword = "short";
+
+    const response = await request(app).post(endpoint).send({
+      username: invalidUsername,
+      password: invalidPassword,
+    });
+
+    expect(usersService.create).not.toHaveBeenCalled();
+    expect(response.status).toBe(400);
+    expect(response.body).not.toHaveProperty("user");
+  });
+
+  test("responds with a 409 when a username already exists", { todo: true });
 });
