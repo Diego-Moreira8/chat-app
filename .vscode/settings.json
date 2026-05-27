@@ -1,3 +1,19 @@
 {
-  "cSpell.words": ["autoincrement", "datasource", "nodenext"]
+  /**
+   * Code Spell Checker Extension
+   */
+  "cSpell.words": ["autoincrement", "datasource", "nodenext"],
+
+  /**
+   * Tanstack Router
+   */
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
+  }
 }

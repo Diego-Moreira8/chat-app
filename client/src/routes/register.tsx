@@ -1,17 +1,24 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import {
   User,
   type RegisterUserRequestBody,
   type RegisterUserResponse,
 } from "@chat-app/shared/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
-import { api } from "./api/instance";
-import { Input } from "./components/ui/input";
+import { Input } from "../components/ui/input";
+import { api } from "../api/instance";
 
-export function App() {
+export const Route = createFileRoute("/register")({
+  component: RegisterComponent,
+});
+
+function RegisterComponent() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
 
@@ -65,6 +72,8 @@ export function App() {
 
   return (
     <>
+      <h1>Crie uma conta e comece a conversar!</h1>
+
       <form onSubmit={handleSubmit(onSubmit)}>
         {result && <p>{result}</p>}
 

@@ -12,6 +12,8 @@
   "dependencies": {
     "@chat-app/shared": "^0.0.1",
     "@hookform/resolvers": "^5.4.0",
+    "@tanstack/react-router": "^1.170.8",
+    "@tanstack/react-router-devtools": "^1.167.0",
     "axios": "^1.16.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
@@ -19,6 +21,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@tanstack/eslint-plugin-router": "^1.162.0",
+    "@tanstack/router-plugin": "^1.168.11",
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
