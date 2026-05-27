@@ -18,6 +18,7 @@ export function App() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm({ resolver: zodResolver(User.register.request) });
 
@@ -43,8 +44,15 @@ export function App() {
           return;
         }
 
-        if (error.response?.status === 400) {
-          setResult("Há um erro no formulário! Corrija e tente novamente.");
+        if (error.response?.data.error.code === "VALIDATION_ERROR") {
+          setResult("Há um erro no formulário! Corrija-o e tente novamente.");
+          return;
+        }
+
+        if (error.response?.data.error.code === "USERNAME_TAKEN") {
+          setError("username", {
+            message: "Este nome de usuário já está em uso! Tente outro.",
+          });
           return;
         }
       }
