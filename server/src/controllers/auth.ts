@@ -1,6 +1,6 @@
+import { User } from "@chat-app/shared/dist/validation";
 import { NextFunction, Request, Response } from "express";
 import * as usersService from "../services/users";
-import { User } from "@chat-app/shared/dist/validation";
 
 export const register = async (
   req: Request,
@@ -15,7 +15,24 @@ export const register = async (
   });
 
   if (!validationResult.success) {
-    return res.status(400).json({ error: validationResult.error.issues });
+    return res.status(400).json({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Dados inválidos",
+        details: validationResult.error.issues,
+      },
+    });
+  }
+
+  const usernameTaken = Boolean(await usersService.findByUsername(username));
+
+  if (usernameTaken) {
+    return res.status(409).json({
+      error: {
+        code: "USERNAME_TAKEN",
+        message: `O nome de usuário "${username}" já está em uso`,
+      },
+    });
   }
 
   const newUser = await usersService.create({

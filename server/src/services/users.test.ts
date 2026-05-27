@@ -6,6 +6,7 @@ vi.mock("@chat-app/shared", () => ({
   prisma: {
     user: {
       create: vi.fn(),
+      findUnique: vi.fn(),
     },
   },
 }));
@@ -17,35 +18,25 @@ vi.mock("bcrypt", () => ({
 }));
 
 test("create a new user and return it's data without the passwordHash", async () => {
-  const now = new Date();
-
-  vi.mocked(prisma.user.create).mockImplementationOnce(
-    () =>
-      ({
-        id: 1,
-        username: "test_username",
-        createdAt: now,
-      }) as any,
-  );
+  const testUsername = "username";
+  const testPassword = "password";
+  const hashedPassword = "hashed_password";
 
   vi.mocked(bcrypt.hash).mockImplementationOnce(() =>
     Promise.resolve("hashed_password"),
   );
 
-  const newUser = await usersService.create({
-    username: "test_username",
-    plainTextPassword: "plain_text_password",
+  await usersService.create({
+    username: testUsername,
+    plainTextPassword: testPassword,
   });
 
-  expect(bcrypt.hash).toHaveBeenCalledExactlyOnceWith(
-    "plain_text_password",
-    10,
-  );
+  expect(bcrypt.hash).toHaveBeenCalledExactlyOnceWith(testPassword, 10);
 
   expect(prisma.user.create).toHaveBeenCalledExactlyOnceWith({
     data: {
-      username: "test_username",
-      passwordHash: "hashed_password",
+      username: testUsername,
+      passwordHash: hashedPassword,
     },
     select: {
       id: true,
@@ -54,10 +45,22 @@ test("create a new user and return it's data without the passwordHash", async ()
       createdAt: true,
     },
   });
+});
 
-  expect(newUser).toEqual({
-    id: 1,
-    username: "test_username",
-    createdAt: now,
+test("find user by username and not return it's passwordHash", async () => {
+  const testUsername = "username";
+
+  await usersService.findByUsername(testUsername);
+
+  expect(prisma.user.findUnique).toHaveBeenCalledExactlyOnceWith({
+    where: {
+      username: testUsername,
+    },
+    select: {
+      id: true,
+      username: true,
+      passwordHash: false,
+      createdAt: true,
+    },
   });
 });
