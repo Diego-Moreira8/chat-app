@@ -2,7 +2,7 @@ import {
   User,
   type RegisterUserRequestBody,
   type RegisterUserResponse,
-} from "@chat-app/shared/dist/validation";
+} from "@chat-app/shared/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { useState } from "react";

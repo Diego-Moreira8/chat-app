@@ -1,8 +1,8 @@
-import { prisma } from "@chat-app/shared";
+import { prisma } from "@chat-app/shared/prisma";
 import bcrypt from "bcrypt";
 import * as usersService from "../services/users";
 
-vi.mock("@chat-app/shared", () => ({
+vi.mock("@chat-app/shared/prisma", () => ({
   prisma: {
     user: {
       create: vi.fn(),

@@ -1,4 +1,4 @@
-import { prisma } from "@chat-app/shared";
+import { prisma } from "@chat-app/shared/prisma";
 import bcrypt from "bcrypt";
 
 interface NewUserPayload {

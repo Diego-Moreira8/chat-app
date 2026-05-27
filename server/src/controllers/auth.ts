@@ -1,4 +1,4 @@
-import { User } from "@chat-app/shared/dist/validation";
+import { User } from "@chat-app/shared/validation";
 import { NextFunction, Request, Response } from "express";
 import * as usersService from "../services/users";
 
