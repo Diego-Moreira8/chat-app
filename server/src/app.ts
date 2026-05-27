@@ -6,6 +6,7 @@ import { corsOptions } from "./config/cors";
 import { errorHandler, notFoundHandler } from "./controllers/errors";
 import { indexRouter } from "./routes/index";
 import { authRouter } from "./routes/auth";
+import { env } from "./config/env";
 
 export const app = express();
 
@@ -13,7 +14,7 @@ export const app = express();
  * Global middlewares.
  */
 app.use(cors(corsOptions));
-app.use(logger("dev"));
+app.use(logger("dev", { skip: () => Boolean(env.nodeEnv === "test") }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
