@@ -1,5 +1,7 @@
 import * as z from "zod";
 
+const NON_EMPTY_MSG = "Este campo é obrigatório";
+
 export const User = {
   register: {
     request: z.object({
@@ -24,6 +26,19 @@ export const User = {
         id: z.number(),
         username: z.string(),
         createdAt: z.string(),
+      }),
+    }),
+  },
+
+  login: {
+    request: z.object({
+      username: z.string().trim().toLowerCase().nonempty(NON_EMPTY_MSG),
+      password: z.string(),
+    }),
+
+    response: z.object({
+      auth: z.object({
+        refreshToken: z.string().nonempty(NON_EMPTY_MSG),
       }),
     }),
   },

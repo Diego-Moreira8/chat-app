@@ -1,7 +1,12 @@
 import { prisma } from "@chat-app/shared/prisma";
 import bcrypt from "bcrypt";
 
-interface NewUserPayload {
+interface CreateUserPayload {
+  username: string;
+  plainTextPassword: string;
+}
+
+interface LoginPayload {
   username: string;
   plainTextPassword: string;
 }
@@ -11,7 +16,7 @@ const BCRYPT_SALT_ROUNDS = 10;
 export const create = async ({
   username,
   plainTextPassword,
-}: NewUserPayload) => {
+}: CreateUserPayload) => {
   const passwordHash = await bcrypt.hash(plainTextPassword, BCRYPT_SALT_ROUNDS);
   const newUser = await prisma.user.create({
     data: {
@@ -43,4 +48,20 @@ export const findByUsername = async (username: string) => {
   });
 
   return userFound;
+};
+
+export const isValidCredentials = async ({
+  username,
+  plainTextPassword,
+}: LoginPayload) => {
+  const userData = await prisma.user.findUnique({ where: { username } });
+
+  if (!userData) return false;
+
+  const passwordsMatch = await bcrypt.compare(
+    plainTextPassword,
+    userData.passwordHash,
+  );
+
+  return passwordsMatch;
 };
