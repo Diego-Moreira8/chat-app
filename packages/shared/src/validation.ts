@@ -38,7 +38,7 @@ export const User = {
 
     response: z.object({
       auth: z.object({
-        refreshToken: z.string(),
+        accessToken: z.string(),
       }),
     }),
   },

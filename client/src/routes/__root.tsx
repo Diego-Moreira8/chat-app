@@ -31,6 +31,11 @@ function RootComponent() {
               Criar conta
             </Link>
           </li>
+          <li>
+            <Link to="/chat" activeProps={{ style: { fontWeight: "bold" } }}>
+              Chat
+            </Link>
+          </li>
         </ul>
       </nav>
 

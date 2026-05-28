@@ -6,45 +6,40 @@ import {
   type LoginResponse,
 } from "@chat-app/shared/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import { useState } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { handleApiError } from "../api/handle-api-errors";
 import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/entrar")({
   component: LoginComponent,
 });
 
 function LoginComponent() {
-  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
 
-  const {
-    formState: { errors },
-    handleSubmit,
-    register,
-  } = useForm({ resolver: zodResolver(User.login.request) });
+  const queryClient = useQueryClient();
 
-  const onSubmit: SubmitHandler<LoginRequestBody> = async ({
-    username,
-    password,
-  }: LoginRequestBody) => {
-    setLoading(true);
-    setResult("");
-
-    try {
-      const response = await api.post<LoginResponse>("/api/v1/auth/login", {
+  const { isPending, mutateAsync } = useMutation({
+    mutationFn: async ({ username, password }: LoginRequestBody) => {
+      return await api.post<LoginResponse>("/api/v1/auth/login", {
         username,
         password,
       });
-
-      console.log(response.data);
+    },
+    onSuccess: (response) => {
+      queryClient.setQueryData(
+        ["user", "accessToken"],
+        response.data.auth.accessToken,
+      );
 
       setResult("Login realizado!");
-    } catch (error) {
+    },
+    onError: (error) => {
       const invalidCredentials =
         isAxiosError(error) && error.response?.data.error.code === "AUTH_ERROR";
 
@@ -55,16 +50,20 @@ function LoginComponent() {
 
       const message = handleApiError(error);
       if (message) setResult(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+  } = useForm({ resolver: zodResolver(User.login.request) });
 
   return (
     <>
       <h1>Entre com a sua conta</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit((credentials) => mutateAsync(credentials))}>
         <p>{result}</p>
 
         <Input
@@ -85,11 +84,15 @@ function LoginComponent() {
         />
 
         <div>
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={isPending}>
             Entrar
           </button>
         </div>
       </form>
+
+      <p>
+        Ainda não tem uma conta? <Link to="/criar-conta">Registre-se</Link>
+      </p>
     </>
   );
 }

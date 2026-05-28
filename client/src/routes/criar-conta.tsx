@@ -6,13 +6,14 @@ import {
   type RegisterUserResponse,
 } from "@chat-app/shared/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { handleApiError } from "../api/handle-api-errors";
 import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
+import { router } from "../router";
 
 export const Route = createFileRoute("/criar-conta")({
   component: RegisterComponent,
@@ -37,13 +38,12 @@ function RegisterComponent() {
     setResult("");
 
     try {
-      const response = await api.post<RegisterUserResponse>(
-        "/api/v1/auth/register",
-        { username, password },
-      );
+      await api.post<RegisterUserResponse>("/api/v1/auth/register", {
+        username,
+        password,
+      });
 
-      console.log(response.data);
-      setResult("Usuário criado!");
+      router.navigate({ to: "/entrar" });
     } catch (error) {
       const usernameTaken =
         isAxiosError(error) &&
@@ -93,6 +93,10 @@ function RegisterComponent() {
           </button>
         </div>
       </form>
+
+      <p>
+        Já tem uma conta? <Link to="/entrar">Entrar</Link>
+      </p>
     </>
   );
 }
