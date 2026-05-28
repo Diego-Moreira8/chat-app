@@ -5,7 +5,7 @@ import * as usersService from "../src/services/users";
 vi.mock("../src/services/users", () => ({
   create: vi.fn(),
   findByUsername: vi.fn(),
-  isValidCredentials: vi.fn(),
+  getWithCredentials: vi.fn(),
 }));
 
 afterEach(() => {
@@ -20,27 +20,32 @@ describe(`POST ${loginEndpoint}`, () => {
   test("successful login", async () => {
     const username = "valid-username";
     const password = "12345678";
+    const createdAt = now;
 
-    vi.mocked(usersService.isValidCredentials).mockResolvedValueOnce(true);
+    vi.mocked(usersService.getWithCredentials).mockResolvedValueOnce({
+      id: 1,
+      username,
+      createdAt,
+    });
 
     const response = await request(app).post(loginEndpoint).send({
       username,
       password,
     });
 
-    expect(usersService.isValidCredentials).toHaveBeenCalledExactlyOnceWith({
+    expect(usersService.getWithCredentials).toHaveBeenCalledExactlyOnceWith({
       username,
       plainTextPassword: password,
     });
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("auth.refreshToken");
+    expect(response.body).toHaveProperty("auth.accessToken");
   });
 
   test("responds with a 400 with invalid fields", async () => {
     // No body
     const response = await request(app).post(loginEndpoint);
 
-    expect(usersService.isValidCredentials).not.toHaveBeenCalled();
+    expect(usersService.getWithCredentials).not.toHaveBeenCalled();
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error.code", "VALIDATION_ERROR");
     expect(response.body).toHaveProperty("error.message");
@@ -52,14 +57,14 @@ describe(`POST ${loginEndpoint}`, () => {
     const username = "username";
     const password = "password";
 
-    vi.mocked(usersService.isValidCredentials).mockResolvedValueOnce(false);
+    vi.mocked(usersService.getWithCredentials).mockResolvedValueOnce(null);
 
     const response = await request(app).post(loginEndpoint).send({
       username,
       password,
     });
 
-    expect(usersService.isValidCredentials).toHaveBeenCalledExactlyOnceWith({
+    expect(usersService.getWithCredentials).toHaveBeenCalledExactlyOnceWith({
       username,
       plainTextPassword: password,
     });

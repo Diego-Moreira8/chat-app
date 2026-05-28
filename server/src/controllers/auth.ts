@@ -1,6 +1,8 @@
 import { User } from "@chat-app/shared/validation";
 import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import * as usersService from "../services/users";
+import { env } from "../config/env";
 
 export const login = async (
   req: Request,
@@ -21,12 +23,12 @@ export const login = async (
 
   const { username, password } = req.body;
 
-  const validCredentials = await usersService.isValidCredentials({
+  const user = await usersService.getWithCredentials({
     username: username,
     plainTextPassword: password,
   });
 
-  if (!validCredentials) {
+  if (!user) {
     return res.status(401).json({
       error: {
         code: "AUTH_ERROR",
@@ -35,9 +37,13 @@ export const login = async (
     });
   }
 
+  const accessToken = jwt.sign({ sub: user.id }, env.jwtSecret, {
+    expiresIn: "15m",
+  });
+
   res.json({
     auth: {
-      refreshToken: "refreshToken",
+      accessToken,
     },
   });
 };

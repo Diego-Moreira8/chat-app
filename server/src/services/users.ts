@@ -50,18 +50,33 @@ export const findByUsername = async (username: string) => {
   return userFound;
 };
 
-export const isValidCredentials = async ({
+export const getWithCredentials = async ({
   username,
   plainTextPassword,
 }: LoginPayload) => {
-  const userData = await prisma.user.findUnique({ where: { username } });
+  const userData = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+      username: true,
+      passwordHash: true,
+      createdAt: true,
+    },
+  });
 
-  if (!userData) return false;
+  if (!userData) return null;
 
   const passwordsMatch = await bcrypt.compare(
     plainTextPassword,
     userData.passwordHash,
   );
 
-  return passwordsMatch;
+  if (passwordsMatch) {
+    const { id, username, createdAt } = userData;
+    return { id, username, createdAt };
+  }
+
+  return null;
 };
