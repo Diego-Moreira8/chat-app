@@ -7,12 +7,7 @@ export const login = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { username, password } = req.body;
-
-  const validationResult = User.login.request.safeParse({
-    username,
-    password,
-  });
+  const validationResult = User.login.request.safeParse(req.body);
 
   if (!validationResult.success) {
     return res.status(400).json({
@@ -23,6 +18,8 @@ export const login = async (
       },
     });
   }
+
+  const { username, password } = req.body;
 
   const validCredentials = await usersService.isValidCredentials({
     username: username,
@@ -50,12 +47,7 @@ export const register = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { username, password } = req.body;
-
-  const validationResult = User.register.request.safeParse({
-    username,
-    password,
-  });
+  const validationResult = User.register.request.safeParse(req.body);
 
   if (!validationResult.success) {
     return res.status(400).json({
@@ -66,6 +58,8 @@ export const register = async (
       },
     });
   }
+
+  const { username, password } = req.body;
 
   const usernameTaken = Boolean(await usersService.findByUsername(username));
 
