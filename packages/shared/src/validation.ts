@@ -33,12 +33,12 @@ export const User = {
   login: {
     request: z.object({
       username: z.string().trim().toLowerCase().nonempty(NON_EMPTY_MSG),
-      password: z.string(),
+      password: z.string().nonempty(NON_EMPTY_MSG),
     }),
 
     response: z.object({
       auth: z.object({
-        refreshToken: z.string().nonempty(NON_EMPTY_MSG),
+        refreshToken: z.string(),
       }),
     }),
   },
@@ -46,3 +46,6 @@ export const User = {
 
 export type RegisterUserRequestBody = z.infer<typeof User.register.request>;
 export type RegisterUserResponse = z.infer<typeof User.register.response>;
+
+export type LoginRequestBody = z.infer<typeof User.login.request>;
+export type LoginResponse = z.infer<typeof User.login.response>;

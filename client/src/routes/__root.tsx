@@ -19,8 +19,13 @@ function RootComponent() {
             </Link>
           </li>
           <li>
+            <Link to="/entrar" activeProps={{ style: { fontWeight: "bold" } }}>
+              Entrar
+            </Link>
+          </li>
+          <li>
             <Link
-              to="/register"
+              to="/criar-conta"
               activeProps={{ style: { fontWeight: "bold" } }}
             >
               Criar conta
