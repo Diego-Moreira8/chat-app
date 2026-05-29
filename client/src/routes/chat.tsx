@@ -1,11 +1,23 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/chat")({
   component: ChatComponent,
+  beforeLoad: async ({ context }) => {
+    const accessToken = await context.queryClient.getQueryData([
+      "user",
+      "accessToken",
+    ]);
+
+    if (!accessToken) throw redirect({ to: "/entrar", statusCode: 401 });
+  },
 });
 
 function ChatComponent() {
-  return <h1>Hello "/chat"!</h1>;
+  return (
+    <>
+      <h1>Chat</h1>
+    </>
+  );
 }

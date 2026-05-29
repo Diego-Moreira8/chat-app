@@ -1,9 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import {
+  createRootRouteWithContext,
+  Link,
+  Outlet,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import type { RouterContext } from "../router";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
@@ -11,6 +16,28 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <>
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <TanStackRouterDevtools />
+    </>
+  );
+}
+
+function NotFoundComponent() {
+  return (
+    <>
+      <h1>404</h1>
+      <p>Ops... Esta página não existe!</p>
+      <Link to="/">Voltar para o início</Link>
+    </>
+  );
+}
+
+function Header() {
+  return (
+    <header>
       <nav>
         <ul>
           <li>
@@ -38,20 +65,6 @@ function RootComponent() {
           </li>
         </ul>
       </nav>
-
-      <Outlet />
-
-      <TanStackRouterDevtools />
-    </>
-  );
-}
-
-function NotFoundComponent() {
-  return (
-    <>
-      <h1>404</h1>
-      <p>Ops... Esta página não existe!</p>
-      <Link to="/">Voltar para o início</Link>
-    </>
+    </header>
   );
 }

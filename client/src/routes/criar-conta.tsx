@@ -13,7 +13,6 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { handleApiError } from "../api/handle-api-errors";
 import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
-import { router } from "../router";
 
 export const Route = createFileRoute("/criar-conta")({
   component: RegisterComponent,
@@ -22,6 +21,8 @@ export const Route = createFileRoute("/criar-conta")({
 function RegisterComponent() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
+
+  const navigate = Route.useNavigate();
 
   const {
     formState: { errors },
@@ -43,7 +44,7 @@ function RegisterComponent() {
         password,
       });
 
-      router.navigate({ to: "/entrar" });
+      navigate({ to: "/entrar" });
     } catch (error) {
       const usernameTaken =
         isAxiosError(error) &&
