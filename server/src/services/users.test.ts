@@ -17,6 +17,10 @@ vi.mock("bcrypt", () => ({
   },
 }));
 
+afterEach(() => {
+  vi.resetAllMocks();
+});
+
 test("create a new user and return it's data without the passwordHash", async () => {
   const testUsername = "username";
   const testPassword = "password";
@@ -37,6 +41,24 @@ test("create a new user and return it's data without the passwordHash", async ()
     data: {
       username: testUsername,
       passwordHash: hashedPassword,
+    },
+    select: {
+      id: true,
+      username: true,
+      passwordHash: false,
+      createdAt: true,
+    },
+  });
+});
+
+test("find user by id and not return it's passwordHash", async () => {
+  const testId = 1;
+
+  await usersService.findById(testId);
+
+  expect(prisma.user.findUnique).toHaveBeenCalledExactlyOnceWith({
+    where: {
+      id: testId,
     },
     select: {
       id: true,

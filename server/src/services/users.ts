@@ -34,6 +34,22 @@ export const create = async ({
   return newUser;
 };
 
+export const findById = async (id: number) => {
+  const userFound = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      username: true,
+      passwordHash: false,
+      createdAt: true,
+    },
+  });
+
+  return userFound;
+};
+
 export const findByUsername = async (username: string) => {
   const userFound = await prisma.user.findUnique({
     where: {

@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import * as usersService from "../services/users";
 import { env } from "../config/env";
+import { errorCodes } from "../utils/error-codes";
 
 export const login = async (
   req: Request,
@@ -14,7 +15,7 @@ export const login = async (
   if (!validationResult.success) {
     return res.status(400).json({
       error: {
-        code: "VALIDATION_ERROR",
+        code: errorCodes.VALIDATION_ERROR,
         message: "Dados inválidos",
         details: validationResult.error.issues,
       },
@@ -31,7 +32,7 @@ export const login = async (
   if (!user) {
     return res.status(401).json({
       error: {
-        code: "AUTH_ERROR",
+        code: errorCodes.AUTH_ERROR,
         message: "Credenciais inválidas",
       },
     });
@@ -70,7 +71,7 @@ export const register = async (
   if (!validationResult.success) {
     return res.status(400).json({
       error: {
-        code: "VALIDATION_ERROR",
+        code: errorCodes.VALIDATION_ERROR,
         message: "Dados inválidos",
         details: validationResult.error.issues,
       },
@@ -84,7 +85,7 @@ export const register = async (
   if (usernameTaken) {
     return res.status(409).json({
       error: {
-        code: "USERNAME_TAKEN",
+        code: errorCodes.USERNAME_TAKEN,
         message: `O nome de usuário "${username}" já está em uso`,
       },
     });
