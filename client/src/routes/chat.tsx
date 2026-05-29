@@ -10,7 +10,12 @@ export const Route = createFileRoute("/chat")({
       "accessToken",
     ]);
 
-    if (!accessToken) throw redirect({ to: "/entrar", statusCode: 401 });
+    if (!accessToken)
+      throw redirect({
+        to: "/entrar",
+        statusCode: 401,
+        search: { message: "Você precisa entrar para acessar o Chat." },
+      });
   },
 });
 

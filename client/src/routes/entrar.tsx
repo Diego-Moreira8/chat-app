@@ -15,12 +15,23 @@ import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+interface LoginSearchParams {
+  message?: string;
+}
+
 export const Route = createFileRoute("/entrar")({
   component: LoginComponent,
+  validateSearch: (search: Record<string, unknown>): LoginSearchParams => {
+    return {
+      message: (search.message as string) || "",
+    };
+  },
 });
 
 function LoginComponent() {
   const [result, setResult] = useState("");
+
+  const { message } = Route.useSearch();
 
   const queryClient = useQueryClient();
 
@@ -65,6 +76,7 @@ function LoginComponent() {
 
       <form onSubmit={handleSubmit((credentials) => mutateAsync(credentials))}>
         <p>{result}</p>
+        <p>{message}</p>
 
         <Input
           autoFocus

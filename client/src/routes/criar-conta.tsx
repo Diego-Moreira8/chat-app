@@ -44,7 +44,13 @@ function RegisterComponent() {
         password,
       });
 
-      navigate({ to: "/entrar" });
+      navigate({
+        to: "/entrar",
+        search: {
+          message:
+            "Usuário criado com sucesso! Você pode entrar com suas credenciais agora.",
+        },
+      });
     } catch (error) {
       const usernameTaken =
         isAxiosError(error) &&
