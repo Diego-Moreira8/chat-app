@@ -28,6 +28,7 @@ app.use("/", indexRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/messages", messagesRouter);
 app.use("/api/v1/users", usersRouter);
+app.get("/ping", (req, res) => res.sendStatus(200));
 
 /**
  * Error handling.
