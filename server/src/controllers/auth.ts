@@ -41,11 +41,23 @@ export const login = async (
     expiresIn: "15m",
   });
 
-  res.json({
-    auth: {
-      accessToken,
-    },
+  const refreshToken = jwt.sign({ sub: user.id }, env.jwtSecret, {
+    expiresIn: "7d",
   });
+
+  res
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: "/",
+      sameSite: "none",
+      secure: true,
+    })
+    .json({
+      auth: {
+        accessToken,
+      },
+    });
 };
 
 export const register = async (

@@ -38,10 +38,16 @@ function LoginComponent() {
 
   const { isPending, mutateAsync } = useMutation({
     mutationFn: async ({ username, password }: LoginRequestBody) => {
-      return await api.post<LoginResponse>("/api/v1/auth/login", {
-        username,
-        password,
-      });
+      return await api.post<LoginResponse>(
+        "/api/v1/auth/login",
+        {
+          username,
+          password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
     },
     onSuccess: (response) => {
       queryClient.setQueryData(

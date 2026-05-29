@@ -33,12 +33,16 @@ describe(`POST ${loginEndpoint}`, () => {
       password,
     });
 
+    const cookies = response.headers["set-cookie"] as unknown as string[];
+
     expect(usersService.getWithCredentials).toHaveBeenCalledExactlyOnceWith({
       username,
       plainTextPassword: password,
     });
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("auth.accessToken");
+    expect(cookies).toBeDefined();
+    expect(cookies.some((c) => c.startsWith("refreshToken="))).toBe(true);
   });
 
   test("responds with a 400 with invalid fields", async () => {
