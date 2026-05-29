@@ -16,14 +16,14 @@ import { Input } from "../components/ui/input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface LoginSearchParams {
-  message?: string;
+  alert?: string;
 }
 
-export const Route = createFileRoute("/entrar")({
+export const Route = createFileRoute("/_auth/entrar")({
   component: LoginComponent,
   validateSearch: (search: Record<string, unknown>): LoginSearchParams => {
     return {
-      message: (search.message as string) || "",
+      alert: (search.alert as string) || "",
     };
   },
 });
@@ -31,7 +31,8 @@ export const Route = createFileRoute("/entrar")({
 function LoginComponent() {
   const [result, setResult] = useState("");
 
-  const { message } = Route.useSearch();
+  const { alert } = Route.useSearch();
+  const navigate = Route.useNavigate();
 
   const queryClient = useQueryClient();
 
@@ -48,7 +49,7 @@ function LoginComponent() {
         response.data.auth.accessToken,
       );
 
-      setResult("Login realizado!");
+      navigate({ to: "/chat" });
     },
     onError: (error) => {
       const invalidCredentials =
@@ -76,7 +77,7 @@ function LoginComponent() {
 
       <form onSubmit={handleSubmit((credentials) => mutateAsync(credentials))}>
         <p>{result}</p>
-        <p>{message}</p>
+        <p>{alert}</p>
 
         <Input
           autoFocus

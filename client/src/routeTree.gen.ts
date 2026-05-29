@@ -9,24 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as EntrarRouteImport } from './routes/entrar'
-import { Route as CriarContaRouteImport } from './routes/criar-conta'
-import { Route as ChatRouteImport } from './routes/chat'
+import { Route as AuthRouteRouteImport } from './routes/_auth.route'
+import { Route as AppRouteRouteImport } from './routes/_app.route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthEntrarRouteImport } from './routes/_auth.entrar'
+import { Route as AuthCriarContaRouteImport } from './routes/_auth.criar-conta'
+import { Route as AppChatRouteImport } from './routes/_app.chat'
 
-const EntrarRoute = EntrarRouteImport.update({
-  id: '/entrar',
-  path: '/entrar',
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CriarContaRoute = CriarContaRouteImport.update({
-  id: '/criar-conta',
-  path: '/criar-conta',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChatRoute = ChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -34,62 +29,78 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthEntrarRoute = AuthEntrarRouteImport.update({
+  id: '/entrar',
+  path: '/entrar',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthCriarContaRoute = AuthCriarContaRouteImport.update({
+  id: '/criar-conta',
+  path: '/criar-conta',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AppChatRoute = AppChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
-  '/criar-conta': typeof CriarContaRoute
-  '/entrar': typeof EntrarRoute
+  '/chat': typeof AppChatRoute
+  '/criar-conta': typeof AuthCriarContaRoute
+  '/entrar': typeof AuthEntrarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
-  '/criar-conta': typeof CriarContaRoute
-  '/entrar': typeof EntrarRoute
+  '/chat': typeof AppChatRoute
+  '/criar-conta': typeof AuthCriarContaRoute
+  '/entrar': typeof AuthEntrarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
-  '/criar-conta': typeof CriarContaRoute
-  '/entrar': typeof EntrarRoute
+  '/_app': typeof AppRouteRouteWithChildren
+  '/_auth': typeof AuthRouteRouteWithChildren
+  '/_app/chat': typeof AppChatRoute
+  '/_auth/criar-conta': typeof AuthCriarContaRoute
+  '/_auth/entrar': typeof AuthEntrarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/chat' | '/criar-conta' | '/entrar'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/chat' | '/criar-conta' | '/entrar'
-  id: '__root__' | '/' | '/chat' | '/criar-conta' | '/entrar'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_auth'
+    | '/_app/chat'
+    | '/_auth/criar-conta'
+    | '/_auth/entrar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ChatRoute: typeof ChatRoute
-  CriarContaRoute: typeof CriarContaRoute
-  EntrarRoute: typeof EntrarRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/entrar': {
-      id: '/entrar'
-      path: '/entrar'
-      fullPath: '/entrar'
-      preLoaderRoute: typeof EntrarRouteImport
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/criar-conta': {
-      id: '/criar-conta'
-      path: '/criar-conta'
-      fullPath: '/criar-conta'
-      preLoaderRoute: typeof CriarContaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -99,14 +110,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/entrar': {
+      id: '/_auth/entrar'
+      path: '/entrar'
+      fullPath: '/entrar'
+      preLoaderRoute: typeof AuthEntrarRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/criar-conta': {
+      id: '/_auth/criar-conta'
+      path: '/criar-conta'
+      fullPath: '/criar-conta'
+      preLoaderRoute: typeof AuthCriarContaRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_app/chat': {
+      id: '/_app/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AppChatRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
   }
 }
 
+interface AppRouteRouteChildren {
+  AppChatRoute: typeof AppChatRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppChatRoute: AppChatRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
+interface AuthRouteRouteChildren {
+  AuthCriarContaRoute: typeof AuthCriarContaRoute
+  AuthEntrarRoute: typeof AuthEntrarRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthCriarContaRoute: AuthCriarContaRoute,
+  AuthEntrarRoute: AuthEntrarRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ChatRoute: ChatRoute,
-  CriarContaRoute: CriarContaRoute,
-  EntrarRoute: EntrarRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  AuthRouteRoute: AuthRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

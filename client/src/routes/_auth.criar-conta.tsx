@@ -14,7 +14,7 @@ import { handleApiError } from "../api/handle-api-errors";
 import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
 
-export const Route = createFileRoute("/criar-conta")({
+export const Route = createFileRoute("/_auth/criar-conta")({
   component: RegisterComponent,
 });
 
@@ -47,7 +47,7 @@ function RegisterComponent() {
       navigate({
         to: "/entrar",
         search: {
-          message:
+          alert:
             "Usuário criado com sucesso! Você pode entrar com suas credenciais agora.",
         },
       });
