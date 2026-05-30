@@ -45,9 +45,11 @@ export const User = {
 
   data: {
     response: z.object({
-      id: z.number(),
-      username: z.string(),
-      createdAt: z.string(),
+      user: z.object({
+        id: z.number(),
+        username: z.string(),
+        createdAt: z.string(),
+      }),
     }),
   },
 };

@@ -1,8 +1,17 @@
+import type { UserDataResponse } from "@chat-app/shared/validation";
 import { Link } from "@tanstack/react-router";
 
-export function Header() {
+interface HeaderProps {
+  userData?: UserDataResponse;
+}
+
+export function Header({ userData }: HeaderProps) {
   return (
     <header>
+      <span>CHAT APP</span>
+
+      <p>{userData ? userData.user.username : "Não autenticado"}</p>
+
       <nav>
         <ul>
           <li>

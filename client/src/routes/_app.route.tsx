@@ -1,17 +1,35 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+/* eslint-disable react-refresh/only-export-components */
+
+import type { UserDataResponse } from "@chat-app/shared/validation";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { Header } from "../components/header";
 
 export const Route = createFileRoute("/_app")({
-  beforeLoad: async ({ context }) => {
-    const accessToken = await context.queryClient.getQueryData([
+  component: AppRootComponent,
+  beforeLoad: ({ context }) => {
+    const userData = context.queryClient.getQueryData<UserDataResponse>([
       "user",
-      "accessToken",
+      "data",
     ]);
 
-    if (!accessToken) {
+    if (!userData) {
       throw redirect({
         to: "/entrar",
         search: { alert: "Você precisa entrar para acessar o chat." },
       });
     }
+
+    // Pass the user data down to all app routes
+    return { userData };
   },
 });
+
+function AppRootComponent() {
+  const { userData } = Route.useRouteContext();
+  return (
+    <>
+      <Header userData={userData} />
+      <Outlet />
+    </>
+  );
+}
