@@ -5,10 +5,13 @@
   "type": "module",
   "exports": {
     "./prisma": "./dist/prisma.js",
-    "./validation": "./dist/validation.js"
+    "./validation": "./dist/validation.js",
+    "./error-codes": "./dist/error-codes.js"
   },
   "scripts": {
     "build": "prisma migrate dev && prisma generate && tsc",
+    "build:code": "tsc",
+    "build:db": "prisma migrate dev && prisma generate",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "studio": "prisma studio --browser none"

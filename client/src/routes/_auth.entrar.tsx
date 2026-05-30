@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 
+import { errorCodes } from "@chat-app/shared/error-codes";
 import {
   User,
   type LoginRequestBody,
@@ -59,7 +60,8 @@ function LoginComponent() {
     },
     onError: (error) => {
       const invalidCredentials =
-        isAxiosError(error) && error.response?.data.error.code === "AUTH_ERROR";
+        isAxiosError(error) &&
+        error.response?.data.error.code === errorCodes.AUTH_ERROR;
 
       if (invalidCredentials) {
         setResult("Nome de usuário ou senha incorretos. Tente novamente.");

@@ -1,7 +1,7 @@
+import { errorCodes } from "@chat-app/shared/error-codes";
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { env } from "../config/env";
-import { errorCodes } from "../utils/error-codes";
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;

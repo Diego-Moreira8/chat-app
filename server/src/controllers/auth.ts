@@ -1,9 +1,9 @@
+import { errorCodes } from "@chat-app/shared/error-codes";
 import { User } from "@chat-app/shared/validation";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import * as usersService from "../services/users";
 import { env } from "../config/env";
-import { errorCodes } from "../utils/error-codes";
 
 export const login = async (
   req: Request,

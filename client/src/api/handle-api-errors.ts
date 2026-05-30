@@ -1,3 +1,4 @@
+import { errorCodes } from "@chat-app/shared/error-codes";
 import { isAxiosError } from "axios";
 
 export const handleApiError = (error: unknown): string | null => {
@@ -8,7 +9,7 @@ export const handleApiError = (error: unknown): string | null => {
     if (error.response?.status && error.response.status >= 500) {
       return "Houve um erro no servidor.";
     }
-    if (error.response?.data?.error?.code === "VALIDATION_ERROR") {
+    if (error.response?.data?.error?.code === errorCodes.VALIDATION_ERROR) {
       return "Há um erro no formulário! Corrija-o e tente novamente.";
     }
 

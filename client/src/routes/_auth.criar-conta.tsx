@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 
+import { errorCodes } from "@chat-app/shared/error-codes";
 import {
   User,
   type RegisterUserRequestBody,
@@ -54,7 +55,7 @@ function RegisterComponent() {
     } catch (error) {
       const usernameTaken =
         isAxiosError(error) &&
-        error.response?.data?.error?.code === "USERNAME_TAKEN";
+        error.response?.data?.error?.code === errorCodes.USERNAME_TAKEN;
 
       if (usernameTaken) {
         setError("username", {
