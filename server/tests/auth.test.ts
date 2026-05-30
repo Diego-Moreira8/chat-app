@@ -14,6 +14,7 @@ afterEach(() => {
 
 const now = new Date();
 const loginEndpoint = "/api/v1/auth/login";
+const refreshEndpoint = "/api/v1/auth/refresh";
 const registerEndpoint = "/api/v1/auth/register";
 
 describe(`POST ${loginEndpoint}`, () => {
@@ -72,6 +73,61 @@ describe(`POST ${loginEndpoint}`, () => {
       username,
       plainTextPassword: password,
     });
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty("error.code", "AUTH_ERROR");
+    expect(response.body).toHaveProperty("error.message");
+    expect(response.body).not.toHaveProperty("auth");
+  });
+});
+
+describe(`GET ${refreshEndpoint}`, () => {
+  it("refreshes the access token when a valid refresh token cookie is present", async () => {
+    const username = "valid-username";
+    const password = "12345678";
+    const createdAt = now;
+
+    vi.mocked(usersService.getWithCredentials).mockResolvedValueOnce({
+      id: 1,
+      username,
+      createdAt,
+    });
+
+    const loginResponse = await request(app).post(loginEndpoint).send({
+      username,
+      password,
+    });
+
+    const setCookie = loginResponse.headers[
+      "set-cookie"
+    ] as unknown as string[];
+    const refreshCookie = setCookie
+      .map((cookie) => cookie.split(";")[0])
+      .find((cookie) => cookie.startsWith("refreshToken="));
+
+    expect(refreshCookie).toBeDefined();
+
+    const refreshResponse = await request(app)
+      .get(refreshEndpoint)
+      .set("Cookie", refreshCookie as string);
+
+    expect(refreshResponse.status).toBe(200);
+    expect(refreshResponse.body).toHaveProperty("auth.accessToken");
+  });
+
+  it("responds with a 401 when no refresh token cookie is provided", async () => {
+    const response = await request(app).get(refreshEndpoint);
+
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty("error.code", "AUTH_ERROR");
+    expect(response.body).toHaveProperty("error.message");
+    expect(response.body).not.toHaveProperty("auth");
+  });
+
+  it("responds with a 401 when the refresh token is invalid", async () => {
+    const response = await request(app)
+      .get(refreshEndpoint)
+      .set("Cookie", "refreshToken=invalid-token");
+
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty("error.code", "AUTH_ERROR");
     expect(response.body).toHaveProperty("error.message");

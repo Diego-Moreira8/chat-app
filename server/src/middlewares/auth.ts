@@ -8,15 +8,19 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
 
   if (!authorization) {
     return res.status(401).json({
-      error: errorCodes.AUTH_ERROR,
-      message: "You need an access token to access this resource",
+      error: {
+        code: errorCodes.AUTH_ERROR,
+        message: "You need an access token to access this resource",
+      },
     });
   }
 
   if (!authorization.startsWith("Bearer ")) {
     return res.status(401).json({
-      error: errorCodes.AUTH_ERROR,
-      message: "Wrong access token format",
+      error: {
+        code: errorCodes.AUTH_ERROR,
+        message: "Wrong access token format",
+      },
     });
   }
 
@@ -37,8 +41,10 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({
-        error: errorCodes.AUTH_ERROR,
-        message: "Invalid access token",
+        error: {
+          code: errorCodes.AUTH_ERROR,
+          message: "Invalid access token",
+        },
       });
     }
 

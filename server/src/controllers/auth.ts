@@ -2,8 +2,8 @@ import { errorCodes } from "@chat-app/shared/error-codes";
 import { User } from "@chat-app/shared/validation";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import * as usersService from "../services/users";
 import { env } from "../config/env";
+import * as usersService from "../services/users";
 
 export const login = async (
   req: Request,
@@ -59,6 +59,54 @@ export const login = async (
         accessToken,
       },
     });
+};
+
+export const refreshAccessToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { refreshToken } = req.cookies;
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      error: {
+        code: errorCodes.AUTH_ERROR,
+        message: "You need a refresh token to access this resource",
+      },
+    });
+  }
+
+  try {
+    const { sub } = jwt.verify(refreshToken, env.jwtSecret) as jwt.JwtPayload;
+
+    if (!sub) throw new Error("sub not present in payload");
+
+    const parsedSub = parseInt(sub, 10);
+
+    if (isNaN(parsedSub)) throw new Error("sub must be a number");
+
+    const accessToken = jwt.sign({ sub }, env.jwtSecret, {
+      expiresIn: "15m",
+    });
+
+    return res.json({
+      auth: {
+        accessToken,
+      },
+    });
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(401).json({
+        error: {
+          code: errorCodes.AUTH_ERROR,
+          message: "Invalid refresh token",
+        },
+      });
+    }
+
+    return next(error);
+  }
 };
 
 export const register = async (

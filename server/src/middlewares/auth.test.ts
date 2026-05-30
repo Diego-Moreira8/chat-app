@@ -32,8 +32,10 @@ describe("Missing authorization header", () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: errorCodes.AUTH_ERROR,
-      message: "You need an access token to access this resource",
+      error: {
+        code: errorCodes.AUTH_ERROR,
+        message: "You need an access token to access this resource",
+      },
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -47,8 +49,10 @@ describe("Invalid authorization format", () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: errorCodes.AUTH_ERROR,
-      message: "Wrong access token format",
+      error: {
+        code: errorCodes.AUTH_ERROR,
+        message: "Wrong access token format",
+      },
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -60,8 +64,10 @@ describe("Invalid authorization format", () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: errorCodes.AUTH_ERROR,
-      message: "Wrong access token format",
+      error: {
+        code: errorCodes.AUTH_ERROR,
+        message: "Wrong access token format",
+      },
     });
   });
 
@@ -72,8 +78,7 @@ describe("Invalid authorization format", () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: errorCodes.AUTH_ERROR,
-      message: "Invalid access token",
+      error: { code: errorCodes.AUTH_ERROR, message: "Invalid access token" },
     });
   });
 });
@@ -119,8 +124,7 @@ describe("Invalid/malformed token", () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: errorCodes.AUTH_ERROR,
-      message: "Invalid access token",
+      error: { code: errorCodes.AUTH_ERROR, message: "Invalid access token" },
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -133,8 +137,7 @@ describe("Invalid/malformed token", () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: errorCodes.AUTH_ERROR,
-      message: "Invalid access token",
+      error: { code: errorCodes.AUTH_ERROR, message: "Invalid access token" },
     });
   });
 
@@ -148,8 +151,7 @@ describe("Invalid/malformed token", () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: errorCodes.AUTH_ERROR,
-      message: "Invalid access token",
+      error: { code: errorCodes.AUTH_ERROR, message: "Invalid access token" },
     });
   });
 });
@@ -196,8 +198,7 @@ describe("Token extraction", () => {
     // This will fail to verify because the token includes "Bearer"
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: errorCodes.AUTH_ERROR,
-      message: "Invalid access token",
+      error: { code: errorCodes.AUTH_ERROR, message: "Invalid access token" },
     });
   });
 
