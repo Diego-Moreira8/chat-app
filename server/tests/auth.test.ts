@@ -17,7 +17,7 @@ const loginEndpoint = "/api/v1/auth/login";
 const registerEndpoint = "/api/v1/auth/register";
 
 describe(`POST ${loginEndpoint}`, () => {
-  test("successful login", async () => {
+  it("successful login", async () => {
     const username = "valid-username";
     const password = "12345678";
     const createdAt = now;
@@ -45,7 +45,7 @@ describe(`POST ${loginEndpoint}`, () => {
     expect(cookies.some((c) => c.startsWith("refreshToken="))).toBe(true);
   });
 
-  test("responds with a 400 with invalid fields", async () => {
+  it("responds with a 400 with invalid fields", async () => {
     // No body
     const response = await request(app).post(loginEndpoint);
 
@@ -57,7 +57,7 @@ describe(`POST ${loginEndpoint}`, () => {
     expect(response.body).not.toHaveProperty("auth");
   });
 
-  test("responds with a 401 with invalid credentials", async () => {
+  it("responds with a 401 with invalid credentials", async () => {
     const username = "username";
     const password = "password";
 
@@ -80,7 +80,7 @@ describe(`POST ${loginEndpoint}`, () => {
 });
 
 describe(`POST ${registerEndpoint}`, () => {
-  test("creates a valid user", async () => {
+  it("creates a valid user", async () => {
     const validUsername = "valid-username";
     const validPassword = "12345678";
 
@@ -112,7 +112,7 @@ describe(`POST ${registerEndpoint}`, () => {
   });
 
   describe("responds with a 400 with invalid fields", () => {
-    test("short username and password", async () => {
+    it("short username and password", async () => {
       const username = " ab  ";
       const password = "short";
 
@@ -130,7 +130,7 @@ describe(`POST ${registerEndpoint}`, () => {
       expect(response.body).not.toHaveProperty("user");
     });
 
-    test("invalid username", async () => {
+    it("invalid username", async () => {
       const username = "user name";
       const password = "password";
 
@@ -148,7 +148,7 @@ describe(`POST ${registerEndpoint}`, () => {
       expect(response.body).not.toHaveProperty("user");
     });
 
-    test("too long username and password", async () => {
+    it("too long username and password", async () => {
       const username = "u".repeat(21);
       const password = "p".repeat(51);
 
@@ -167,7 +167,7 @@ describe(`POST ${registerEndpoint}`, () => {
     });
   });
 
-  test("responds with a 409 when a username already exists", async () => {
+  it("responds with a 409 when a username already exists", async () => {
     const takenUsername = "username";
     const validPassword = "password";
 

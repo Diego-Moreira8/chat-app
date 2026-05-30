@@ -21,7 +21,7 @@ afterEach(() => {
   vi.resetAllMocks();
 });
 
-test("create a new user and return it's data without the passwordHash", async () => {
+it("create a new user and return it's data without the passwordHash", async () => {
   const testUsername = "username";
   const testPassword = "password";
   const hashedPassword = "hashed_password";
@@ -51,7 +51,7 @@ test("create a new user and return it's data without the passwordHash", async ()
   });
 });
 
-test("find user by id and not return it's passwordHash", async () => {
+it("find user by id and not return it's passwordHash", async () => {
   const testId = 1;
 
   await usersService.findById(testId);
@@ -69,7 +69,7 @@ test("find user by id and not return it's passwordHash", async () => {
   });
 });
 
-test("find user by username and not return it's passwordHash", async () => {
+it("find user by username and not return it's passwordHash", async () => {
   const testUsername = "username";
 
   await usersService.findByUsername(testUsername);

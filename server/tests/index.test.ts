@@ -8,11 +8,11 @@ describe("GET /", () => {
     response = await request(app).get("/");
   });
 
-  test("responds with 200 status code", () => {
+  it("responds with 200 status code", () => {
     expect(response.status).toBe(200);
   });
 
-  test("responds with a json containing a message key", () => {
+  it("responds with a json containing a message key", () => {
     expect(response.body).toHaveProperty(
       "message",
       expect.stringContaining("Hello, World! "),
