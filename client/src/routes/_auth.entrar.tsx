@@ -32,6 +32,12 @@ export const Route = createFileRoute("/_auth/entrar")({
 function LoginComponent() {
   const [result, setResult] = useState("");
 
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+  } = useForm({ resolver: zodResolver(User.login.request) });
+
   const { alert } = Route.useSearch();
   const navigate = Route.useNavigate();
 
@@ -73,12 +79,6 @@ function LoginComponent() {
     },
   });
 
-  const {
-    formState: { errors },
-    handleSubmit,
-    register,
-  } = useForm({ resolver: zodResolver(User.login.request) });
-
   return (
     <>
       <h1>Entre com a sua conta</h1>
@@ -94,6 +94,7 @@ function LoginComponent() {
           label="Nome de usuário"
           registration={register("username")}
           error={errors.username?.message}
+          disabled={isPending}
         />
 
         <Input
@@ -102,6 +103,7 @@ function LoginComponent() {
           label="Senha"
           registration={register("password")}
           error={errors.username?.message}
+          disabled={isPending}
         />
 
         <div>

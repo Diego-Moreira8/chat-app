@@ -10,20 +10,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import { useState } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { handleApiError } from "../api/handle-api-errors";
 import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
+import { useMutation } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_auth/criar-conta")({
   component: RegisterComponent,
 });
 
 function RegisterComponent() {
-  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
-
-  const navigate = Route.useNavigate();
 
   const {
     formState: { errors },
@@ -32,19 +30,16 @@ function RegisterComponent() {
     setError,
   } = useForm({ resolver: zodResolver(User.register.request) });
 
-  const onSubmit: SubmitHandler<RegisterUserRequestBody> = async ({
-    username,
-    password,
-  }: RegisterUserRequestBody) => {
-    setLoading(true);
-    setResult("");
+  const navigate = Route.useNavigate();
 
-    try {
-      await api.post<RegisterUserResponse>("/api/v1/auth/register", {
+  const { isPending, mutateAsync } = useMutation({
+    mutationFn: async ({ username, password }: RegisterUserRequestBody) => {
+      return await api.post<RegisterUserResponse>("/api/v1/auth/register", {
         username,
         password,
       });
-
+    },
+    onSuccess: () => {
       navigate({
         to: "/entrar",
         search: {
@@ -52,7 +47,8 @@ function RegisterComponent() {
             "Usuário criado com sucesso! Você pode entrar com suas credenciais agora.",
         },
       });
-    } catch (error) {
+    },
+    onError: (error) => {
       const usernameTaken =
         isAxiosError(error) &&
         error.response?.data?.error?.code === errorCodes.USERNAME_TAKEN;
@@ -66,16 +62,14 @@ function RegisterComponent() {
 
       const message = handleApiError(error);
       if (message) setResult(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
   return (
     <>
       <h1>Crie uma conta e comece a conversar!</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit((credentials) => mutateAsync(credentials))}>
         <p>{result}</p>
 
         <Input
@@ -85,6 +79,7 @@ function RegisterComponent() {
           label="Nome de usuário"
           registration={register("username")}
           error={errors.username?.message}
+          disabled={isPending}
         />
 
         <Input
@@ -93,10 +88,11 @@ function RegisterComponent() {
           label="Senha"
           registration={register("password")}
           error={errors.password?.message}
+          disabled={isPending}
         />
 
         <div>
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={isPending}>
             Criar conta
           </button>
         </div>
