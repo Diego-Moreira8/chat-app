@@ -5,6 +5,7 @@ import {
   User,
   type LoginRequestBody,
   type LoginResponse,
+  type UserDataResponse,
 } from "@chat-app/shared/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -43,7 +44,7 @@ function LoginComponent() {
 
   const queryClient = useQueryClient();
 
-  const { isPending, mutateAsync } = useMutation({
+  const postLoginMutation = useMutation({
     mutationFn: async ({ username, password }: LoginRequestBody) => {
       return await api.post<LoginResponse>(
         "/api/v1/auth/login",
@@ -57,12 +58,11 @@ function LoginComponent() {
       );
     },
     onSuccess: (response) => {
-      queryClient.setQueryData(
-        ["user", "accessToken"],
-        response.data.auth.accessToken,
-      );
+      const { accessToken } = response.data.auth;
 
-      navigate({ to: "/chat" });
+      queryClient.setQueryData(["user", "accessToken"], accessToken);
+
+      getMeMutation.mutateAsync({ accessToken });
     },
     onError: (error) => {
       const invalidCredentials =
@@ -79,11 +79,35 @@ function LoginComponent() {
     },
   });
 
+  const getMeMutation = useMutation({
+    mutationFn: async ({ accessToken }: { accessToken: string }) => {
+      return await api.get<UserDataResponse>("/api/v1/users/me", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+    },
+    onSuccess: (response) => {
+      queryClient.setQueryData(["user", "data"], response.data);
+
+      navigate({ to: "/chat" });
+    },
+    onError: (error) => {
+      const message = handleApiError(error);
+
+      if (message) setResult(message);
+    },
+  });
+
+  const isPending = postLoginMutation.isPending || getMeMutation.isPending;
+
   return (
     <>
       <h1>Entre com a sua conta</h1>
 
-      <form onSubmit={handleSubmit((credentials) => mutateAsync(credentials))}>
+      <form
+        onSubmit={handleSubmit((credentials) =>
+          postLoginMutation.mutateAsync(credentials),
+        )}
+      >
         <p>{result}</p>
         <p>{alert}</p>
 

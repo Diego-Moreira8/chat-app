@@ -42,6 +42,14 @@ export const User = {
       }),
     }),
   },
+
+  data: {
+    response: z.object({
+      id: z.number(),
+      username: z.string(),
+      createdAt: z.string(),
+    }),
+  },
 };
 
 export type RegisterUserRequestBody = z.infer<typeof User.register.request>;
@@ -49,3 +57,5 @@ export type RegisterUserResponse = z.infer<typeof User.register.response>;
 
 export type LoginRequestBody = z.infer<typeof User.login.request>;
 export type LoginResponse = z.infer<typeof User.login.response>;
+
+export type UserDataResponse = z.infer<typeof User.data.response>;
