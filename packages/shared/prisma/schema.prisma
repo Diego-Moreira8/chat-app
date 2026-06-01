@@ -12,4 +12,13 @@ model User {
   username     String    @unique
   passwordHash String
   createdAt    DateTime? @default(now())
+  messages     Message[]
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  ownerId   Int
+  owner     User     @relation(fields: [ownerId], references: [id])
 }

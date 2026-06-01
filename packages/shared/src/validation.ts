@@ -54,6 +54,18 @@ export const User = {
   },
 };
 
+export const Message = {
+  create: {
+    request: z.object({
+      content: z
+        .string()
+        .trim()
+        .nonempty(NON_EMPTY_MSG)
+        .max(250, "Mensagens podem ter no máximo 250 caracteres"),
+    }),
+  },
+};
+
 export type RegisterUserRequestBody = z.infer<typeof User.register.request>;
 export type RegisterUserResponse = z.infer<typeof User.register.response>;
 

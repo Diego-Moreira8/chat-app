@@ -1,7 +1,7 @@
 import express from "express";
+import * as msgsController from "../controllers/messages";
+import { auth } from "../middlewares/auth";
 
 export const messagesRouter = express.Router();
 
-messagesRouter.get("/", (req, res) =>
-  res.json({ message: "Hello, from messages" }),
-);
+messagesRouter.post("/", auth, msgsController.createMessage);
