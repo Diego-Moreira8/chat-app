@@ -25,8 +25,8 @@ describe(`GET ${meEndpoint}`, () => {
     const response = await request(app).get(meEndpoint);
 
     expect(response.status).toBe(401);
-    expect(response.body).toHaveProperty("error");
-    expect(response.body).toHaveProperty("message");
+    expect(response.body).toHaveProperty("error.code");
+    expect(response.body).toHaveProperty("error.message");
   });
 
   it("responds with user data when authenticated and user exists", async () => {

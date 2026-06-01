@@ -1,6 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import type { UserDataResponse } from "@chat-app/shared/validation";
+import type {
+  LoginResponse,
+  UserDataResponse,
+} from "@chat-app/shared/validation";
 import { useQuery, type QueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
@@ -10,10 +13,13 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { api } from "../api/instance";
 import { queryClient } from "../queryClient";
+import { accessTokenMaxAge, errorCodes } from "@chat-app/shared/variables";
+import { isAxiosError } from "axios";
+import { useEffect } from "react";
 
 export interface RouterContext {
   queryClient?: QueryClient;
-  accessToken?: string;
+  accessToken?: string | null;
   userData?: UserDataResponse;
 }
 
@@ -27,30 +33,101 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
-  const pingServer = useQuery({
+  const navigate = Route.useNavigate();
+
+  /**
+   * Initial queries
+   */
+
+  const pingServerQuery = useQuery({
     queryKey: ["serverStatus"],
     queryFn: () => api.get("/ping"),
-    staleTime: Infinity,
   });
 
-  if (pingServer.isLoading) {
+  const accessTokenQuery = useQuery({
+    queryKey: ["user", "accessToken"],
+    staleTime: accessTokenMaxAge,
+    enabled: Boolean(pingServerQuery.data),
+    queryFn: async () => {
+      try {
+        const response = await api.get<LoginResponse>("/api/v1/auth/refresh", {
+          withCredentials: true,
+        });
+
+        return response.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          const invalidRefreshToken =
+            error.response?.data.error.code === errorCodes.AUTH_ERROR;
+
+          if (invalidRefreshToken) return null;
+        }
+
+        throw error;
+      }
+    },
+  });
+
+  const userDataQuery = useQuery({
+    queryKey: ["user", "data"],
+    enabled: Boolean(accessTokenQuery.data),
+    queryFn: async () => {
+      const response = await api.get<UserDataResponse>("/api/v1/users/me", {
+        headers: {
+          Authorization: `Bearer ${accessTokenQuery.data?.auth.accessToken}`,
+        },
+      });
+
+      return response.data;
+    },
+  });
+
+  const isAuthenticating =
+    accessTokenQuery.isLoading || userDataQuery.isLoading;
+
+  const isLoading = pingServerQuery.isLoading || isAuthenticating;
+
+  /**
+   * Redirection rules
+   */
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (userDataQuery.data) {
+      navigate({ to: "/chat" });
+    } else {
+      navigate({ to: "/entrar" });
+    }
+  }, [isLoading, userDataQuery.data, navigate]);
+
+  /**
+   * Render
+   */
+
+  if (pingServerQuery.isLoading) {
     return (
       <p>
         ⌛ Acordando servidor...{" "}
-        {pingServer.failureCount > 0 && `Tentativa ${pingServer.failureCount}`}
+        {pingServerQuery.failureCount > 0 &&
+          `Tentativa ${pingServerQuery.failureCount}`}
       </p>
     );
   }
 
-  if (pingServer.isError) {
+  if (pingServerQuery.isError) {
     return <p>❌ O servidor não acordou! Tente novamente mais tarde.</p>;
+  }
+
+  if (isAuthenticating) {
+    return <p>🔐 Tentando autenticar usuário...</p>;
   }
 
   return (
     <>
-      <main>
+      <div>
         <Outlet />
-      </main>
+      </div>
 
       <TanStackRouterDevtools />
     </>

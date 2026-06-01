@@ -1,4 +1,4 @@
-import { errorCodes } from "@chat-app/shared/error-codes";
+import { errorCodes } from "@chat-app/shared/variables";
 import { isAxiosError } from "axios";
 
 export const handleApiError = (error: unknown): string | null => {

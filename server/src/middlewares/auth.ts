@@ -1,4 +1,4 @@
-import { errorCodes } from "@chat-app/shared/error-codes";
+import { errorCodes } from "@chat-app/shared/variables";
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { env } from "../config/env";

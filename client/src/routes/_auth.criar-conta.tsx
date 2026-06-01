@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { errorCodes } from "@chat-app/shared/error-codes";
+import { errorCodes } from "@chat-app/shared/variables";
 import {
   User,
   type RegisterUserRequestBody,

@@ -1,4 +1,8 @@
-import { errorCodes } from "@chat-app/shared/error-codes";
+import {
+  accessTokenMaxAge,
+  errorCodes,
+  refreshTokenMaxAge,
+} from "@chat-app/shared/variables";
 import { User } from "@chat-app/shared/validation";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -39,17 +43,17 @@ export const login = async (
   }
 
   const accessToken = jwt.sign({ sub: user.id }, env.jwtSecret, {
-    expiresIn: "15m",
+    expiresIn: accessTokenMaxAge,
   });
 
   const refreshToken = jwt.sign({ sub: user.id }, env.jwtSecret, {
-    expiresIn: "7d",
+    expiresIn: refreshTokenMaxAge,
   });
 
   res
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: refreshTokenMaxAge,
       path: "/",
       sameSite: "none",
       secure: true,
@@ -87,7 +91,7 @@ export const refreshAccessToken = async (
     if (isNaN(parsedSub)) throw new Error("sub must be a number");
 
     const accessToken = jwt.sign({ sub }, env.jwtSecret, {
-      expiresIn: "15m",
+      expiresIn: accessTokenMaxAge,
     });
 
     return res.json({

@@ -6,7 +6,7 @@
   "exports": {
     "./prisma": "./dist/prisma.js",
     "./validation": "./dist/validation.js",
-    "./error-codes": "./dist/error-codes.js"
+    "./variables": "./dist/variables.js"
   },
   "scripts": {
     "build": "prisma migrate dev && prisma generate && tsc",
