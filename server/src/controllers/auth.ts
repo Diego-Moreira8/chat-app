@@ -26,7 +26,7 @@ export const login = async (
     });
   }
 
-  const { username, password } = req.body;
+  const { username, password } = validationResult.data;
 
   const user = await usersService.getWithCredentials({
     username: username,
@@ -138,7 +138,7 @@ export const register = async (
     });
   }
 
-  const { username, password } = req.body;
+  const { username, password } = validationResult.data;
 
   const usernameTaken = Boolean(await usersService.findByUsername(username));
 
