@@ -65,6 +65,14 @@ export const login = async (
     });
 };
 
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  res.clearCookie("refreshToken").sendStatus(204);
+};
+
 export const refreshAccessToken = async (
   req: Request,
   res: Response,

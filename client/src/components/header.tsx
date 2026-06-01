@@ -1,11 +1,25 @@
 import type { UserDataResponse } from "@chat-app/shared/validation";
-import { Link } from "@tanstack/react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { api } from "../api/instance";
 
 interface HeaderProps {
   userData?: UserDataResponse;
 }
 
 export function Header({ userData }: HeaderProps) {
+  const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
+
+  const logoutMutation = useMutation({
+    mutationFn: () => api.get("/api/v1/auth/logout", { withCredentials: true }),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["user"] });
+      navigate({ to: "/entrar" });
+    },
+  });
+
   return (
     <header>
       <span>CHAT APP</span>
@@ -38,6 +52,14 @@ export function Header({ userData }: HeaderProps) {
             </Link>
           </li>
         </ul>
+
+        <button
+          type="button"
+          onClick={() => logoutMutation.mutateAsync()}
+          disabled={logoutMutation.isPending}
+        >
+          {logoutMutation.isPending ? "Saindo..." : "Sair"}
+        </button>
       </nav>
     </header>
   );
