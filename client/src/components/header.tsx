@@ -15,7 +15,8 @@ export function Header({ userData }: HeaderProps) {
   const logoutMutation = useMutation({
     mutationFn: () => api.get("/api/v1/auth/logout", { withCredentials: true }),
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ["user"] });
+      queryClient.setQueryData(["user", "accessToken"], null);
+      queryClient.setQueryData(["user", "data"], null);
       navigate({ to: "/entrar" });
     },
   });

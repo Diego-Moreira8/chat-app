@@ -12,6 +12,7 @@
     "build": "prisma migrate dev && prisma generate && tsc",
     "build:code": "tsc",
     "build:db": "prisma migrate dev && prisma generate",
+    "dev": "tsc --watch",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "studio": "prisma studio --browser none"

@@ -46,8 +46,23 @@ function RootComponent() {
 
   const accessTokenQuery = useQuery({
     queryKey: ["user", "accessToken"],
-    staleTime: accessTokenMaxAge,
     enabled: Boolean(pingServerQuery.data),
+    staleTime: ({ state }) => {
+      // Prevent stale when no data
+      if (!state.data) {
+        return Infinity;
+      }
+
+      return accessTokenMaxAge;
+    },
+    refetchInterval: ({ state }) => {
+      // Prevent refetch when no refresh token
+      if (!state.data) {
+        return false;
+      }
+
+      return accessTokenMaxAge - 1000; // 1 sec before for safety
+    },
     queryFn: async () => {
       try {
         const response = await api.get<LoginResponse>("/api/v1/auth/refresh", {
