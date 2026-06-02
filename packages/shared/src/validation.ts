@@ -2,6 +2,7 @@ import * as z from "zod";
 
 const NON_EMPTY_MSG = "Este campo é obrigatório";
 
+// Todo: change to Users
 export const User = {
   register: {
     request: z.object({
@@ -54,6 +55,7 @@ export const User = {
   },
 };
 
+// Todo: change to Messages
 export const Message = {
   create: {
     request: z.object({
@@ -62,6 +64,17 @@ export const Message = {
         .trim()
         .nonempty(NON_EMPTY_MSG)
         .max(250, "Mensagens podem ter no máximo 250 caracteres"),
+    }),
+
+    response: z.object({
+      message: z.object({
+        id: z.number(),
+        content: z.string(),
+        createdAt: z.date(),
+        owner: z.object({
+          username: z.string(),
+        }),
+      }),
     }),
   },
 };
@@ -73,3 +86,6 @@ export type LoginRequestBody = z.infer<typeof User.login.request>;
 export type LoginResponse = z.infer<typeof User.login.response>;
 
 export type UserDataResponse = z.infer<typeof User.data.response>;
+
+export type CreateMessageRequestBody = z.infer<typeof Message.create.request>;
+export type CreateMessageResponse = z.infer<typeof Message.create.response>;

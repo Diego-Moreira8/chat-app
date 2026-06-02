@@ -1,7 +1,7 @@
+import { CreateMessageResponse, Message } from "@chat-app/shared/validation";
+import { errorCodes } from "@chat-app/shared/variables";
 import { NextFunction, Request, Response } from "express";
 import * as msgsService from "../services/messages";
-import { Message } from "@chat-app/shared/validation";
-import { errorCodes } from "@chat-app/shared/variables";
 
 export const createMessage = async (
   req: Request,
@@ -26,9 +26,9 @@ export const createMessage = async (
 
   if (!ownerId) throw new Error("User ID was not defined on auth middleware");
 
-  const newMessage = await msgsService.create({ ownerId, content });
+  const message = await msgsService.create({ ownerId, content });
 
   res.json({
-    newMessage,
-  });
+    message,
+  } satisfies CreateMessageResponse);
 };

@@ -11,6 +11,16 @@ export const create = async ({ ownerId, content }: NewMessagePayload) => {
       ownerId,
       content,
     },
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      owner: {
+        select: {
+          username: true,
+        },
+      },
+    },
   });
 
   return newMessage;

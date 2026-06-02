@@ -1,0 +1,74 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "../api/instance";
+import {
+  Message,
+  type CreateMessageRequestBody,
+  type CreateMessageResponse,
+  type LoginResponse,
+} from "@chat-app/shared/validation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+export function MessageForm() {
+  const {
+    handleSubmit,
+    register,
+    resetField,
+    setError,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(Message.create.request),
+  });
+
+  const queryClient = useQueryClient();
+
+  const messagesMutation = useMutation({
+    mutationFn: async ({ content }: CreateMessageRequestBody) => {
+      const accessToken = queryClient.getQueryData<LoginResponse>([
+        "user",
+        "accessToken",
+      ])?.auth.accessToken;
+
+      if (!accessToken) {
+        throw new Error("No access token on query data");
+      }
+
+      const response = await api.post<CreateMessageResponse>(
+        "/api/v1/messages",
+        { content },
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+
+      return response.data;
+    },
+    onSuccess: () => {
+      resetField("content");
+    },
+    onError: () => {
+      setError("form", {
+        message:
+          "Houve um erro interno ao enviar sua mensagem! Recarregue a página e tente novamente.",
+      });
+    },
+  });
+
+  return (
+    <form
+      onSubmit={handleSubmit(({ content }) =>
+        messagesMutation.mutateAsync({ content }),
+      )}
+    >
+      <p>{errors.form?.message || errors.content?.message}</p>
+
+      <input
+        type="text"
+        disabled={messagesMutation.isPending}
+        {...register("content")}
+      />
+
+      <button type="submit" disabled={messagesMutation.isPending}>
+        {messagesMutation.isPending ? "Enviando..." : "Enviar"}
+      </button>
+    </form>
+  );
+}
