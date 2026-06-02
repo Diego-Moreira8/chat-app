@@ -15,7 +15,7 @@ import { api } from "../api/instance";
 import { queryClient } from "../queryClient";
 import { accessTokenMaxAge, errorCodes } from "@chat-app/shared/variables";
 import { isAxiosError } from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export interface RouterContext {
   queryClient?: QueryClient;
@@ -33,6 +33,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
+  const [forcedLogout, setForcedLogout] = useState(false);
+
   const navigate = Route.useNavigate();
 
   /**
@@ -64,18 +66,28 @@ function RootComponent() {
       return accessTokenMaxAge - 1000; // 1 sec before for safety
     },
     queryFn: async () => {
+      setForcedLogout(false);
+
       try {
         const response = await api.get<LoginResponse>("/api/v1/auth/refresh", {
           withCredentials: true,
         });
 
-        return response.data;
+        return response.data.auth.accessToken;
       } catch (error) {
         if (isAxiosError(error)) {
           const invalidRefreshToken =
             error.response?.data.error.code === errorCodes.AUTH_ERROR;
 
-          if (invalidRefreshToken) return null;
+          if (invalidRefreshToken) {
+            const wasLoggedIn = accessTokenQuery.data;
+
+            if (wasLoggedIn) setForcedLogout(true);
+
+            queryClient.setQueryData(["user", "data"], null);
+
+            return null;
+          }
         }
 
         throw error;
@@ -89,7 +101,7 @@ function RootComponent() {
     queryFn: async () => {
       const response = await api.get<UserDataResponse>("/api/v1/users/me", {
         headers: {
-          Authorization: `Bearer ${accessTokenQuery.data?.auth.accessToken}`,
+          Authorization: `Bearer ${accessTokenQuery.data}`,
         },
       });
 
@@ -98,7 +110,7 @@ function RootComponent() {
   });
 
   const isAuthenticating =
-    accessTokenQuery.isLoading || userDataQuery.isLoading;
+    accessTokenQuery.isLoading || userDataQuery.isFetching;
 
   const isLoading = pingServerQuery.isLoading || isAuthenticating;
 
@@ -111,10 +123,17 @@ function RootComponent() {
 
     if (userDataQuery.data) {
       navigate({ to: "/chat" });
+    } else if (forcedLogout) {
+      navigate({
+        to: "/entrar",
+        search: {
+          alert: "Sua sessão expirou! Entre com suas credenciais novamente.",
+        },
+      });
     } else {
       navigate({ to: "/entrar" });
     }
-  }, [isLoading, userDataQuery.data, navigate]);
+  }, [isLoading, userDataQuery.data, forcedLogout, navigate]);
 
   /**
    * Render

@@ -4,7 +4,6 @@ import {
   Message,
   type CreateMessageRequestBody,
   type CreateMessageResponse,
-  type LoginResponse,
 } from "@chat-app/shared/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,10 +23,10 @@ export function MessageForm() {
 
   const messagesMutation = useMutation({
     mutationFn: async ({ content }: CreateMessageRequestBody) => {
-      const accessToken = queryClient.getQueryData<LoginResponse>([
+      const accessToken = queryClient.getQueryData<string>([
         "user",
         "accessToken",
-      ])?.auth.accessToken;
+      ]);
 
       if (!accessToken) {
         throw new Error("No access token on query data");
@@ -61,6 +60,7 @@ export function MessageForm() {
       <p>{errors.form?.message || errors.content?.message}</p>
 
       <input
+        autoFocus
         type="text"
         disabled={messagesMutation.isPending}
         {...register("content")}

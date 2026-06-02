@@ -5,7 +5,6 @@ import {
   User,
   type LoginRequestBody,
   type LoginResponse,
-  type UserDataResponse,
 } from "@chat-app/shared/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -44,7 +43,7 @@ function LoginComponent() {
 
   const postLoginMutation = useMutation({
     mutationFn: async ({ username, password }: LoginRequestBody) => {
-      return await api.post<LoginResponse>(
+      const response = await api.post<LoginResponse>(
         "/api/v1/auth/login",
         {
           username,
@@ -54,13 +53,17 @@ function LoginComponent() {
           withCredentials: true,
         },
       );
+
+      return response.data;
     },
-    onSuccess: (response) => {
-      const { accessToken } = response.data.auth;
+    onSuccess: async (data) => {
+      const { accessToken } = data.auth;
 
       queryClient.setQueryData(["user", "accessToken"], accessToken);
 
-      getMeMutation.mutateAsync({ accessToken });
+      navigate({ to: "/" });
+
+      await queryClient.invalidateQueries({ queryKey: ["user", "data"] });
     },
     onError: (error) => {
       const invalidCredentials =
@@ -78,26 +81,6 @@ function LoginComponent() {
       if (message) setError("form", { message });
     },
   });
-
-  const getMeMutation = useMutation({
-    mutationFn: async ({ accessToken }: { accessToken: string }) => {
-      return await api.get<UserDataResponse>("/api/v1/users/me", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-    },
-    onSuccess: (response) => {
-      queryClient.setQueryData(["user", "data"], response.data);
-
-      navigate({ to: "/chat" });
-    },
-    onError: (error) => {
-      const message = handleApiError(error);
-
-      if (message) setError("form", { message });
-    },
-  });
-
-  const isPending = postLoginMutation.isPending || getMeMutation.isPending;
 
   return (
     <>
@@ -118,7 +101,7 @@ function LoginComponent() {
           label="Nome de usuário"
           registration={register("username")}
           error={errors.username?.message}
-          disabled={isPending}
+          disabled={postLoginMutation.isPending}
         />
 
         <Input
@@ -127,11 +110,11 @@ function LoginComponent() {
           label="Senha"
           registration={register("password")}
           error={errors.username?.message}
-          disabled={isPending}
+          disabled={postLoginMutation.isPending}
         />
 
         <div>
-          <button type="submit" disabled={isPending}>
+          <button type="submit" disabled={postLoginMutation.isPending}>
             Entrar
           </button>
         </div>
