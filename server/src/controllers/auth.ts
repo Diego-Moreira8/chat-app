@@ -3,7 +3,11 @@ import {
   errorCodes,
   refreshTokenMaxAge,
 } from "@chat-app/shared/variables";
-import { User } from "@chat-app/shared/validation";
+import {
+  LoginResponse,
+  RegisterUserResponse,
+  User,
+} from "@chat-app/shared/validation";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
@@ -62,7 +66,7 @@ export const login = async (
       auth: {
         accessToken,
       },
-    });
+    } satisfies LoginResponse);
 };
 
 export const logout = async (
@@ -106,7 +110,7 @@ export const refreshAccessToken = async (
       auth: {
         accessToken,
       },
-    });
+    } satisfies LoginResponse);
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({
@@ -151,10 +155,15 @@ export const register = async (
     });
   }
 
-  const newUser = await usersService.create({
+  const user = await usersService.create({
     username: username,
     plainTextPassword: password,
   });
 
-  res.status(201).json({ user: newUser });
+  res.status(201).json({
+    user: {
+      ...user,
+      createdAt: user.createdAt.toISOString(),
+    },
+  } satisfies RegisterUserResponse);
 };

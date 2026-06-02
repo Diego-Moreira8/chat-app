@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import * as usersService from "../services/users";
+import { RegisterUserResponse } from "@chat-app/shared/validation";
 
 export const getMe = async (
   req: Request,
@@ -8,13 +9,16 @@ export const getMe = async (
 ) => {
   const userId = res.locals.sub!; // Coming from the auth middleware
 
-  const userData = await usersService.findById(userId);
+  const user = await usersService.findById(userId);
 
-  if (!userData) {
+  if (!user) {
     return res.sendStatus(404);
   }
 
   res.json({
-    user: userData,
-  });
+    user: {
+      ...user,
+      createdAt: user.createdAt.toISOString(),
+    },
+  } satisfies RegisterUserResponse);
 };
