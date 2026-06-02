@@ -10,7 +10,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { handleApiError } from "../api/handle-api-errors";
 import { api } from "../api/instance";
@@ -31,12 +30,11 @@ export const Route = createFileRoute("/_auth/entrar")({
 });
 
 function LoginComponent() {
-  const [result, setResult] = useState("");
-
   const {
     formState: { errors },
     handleSubmit,
     register,
+    setError,
   } = useForm({ resolver: zodResolver(User.login.request) });
 
   const { alert } = Route.useSearch();
@@ -70,12 +68,14 @@ function LoginComponent() {
         error.response?.data.error.code === errorCodes.AUTH_ERROR;
 
       if (invalidCredentials) {
-        setResult("Nome de usuário ou senha incorretos. Tente novamente.");
+        setError("form", {
+          message: "Nome de usuário ou senha incorretos. Tente novamente.",
+        });
         return;
       }
 
       const message = handleApiError(error);
-      if (message) setResult(message);
+      if (message) setError("form", { message });
     },
   });
 
@@ -93,7 +93,7 @@ function LoginComponent() {
     onError: (error) => {
       const message = handleApiError(error);
 
-      if (message) setResult(message);
+      if (message) setError("form", { message });
     },
   });
 
@@ -108,7 +108,7 @@ function LoginComponent() {
           postLoginMutation.mutateAsync(credentials),
         )}
       >
-        <p>{result}</p>
+        <p>{errors.form?.message}</p>
         <p>{alert}</p>
 
         <Input

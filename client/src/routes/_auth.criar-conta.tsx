@@ -9,7 +9,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { handleApiError } from "../api/handle-api-errors";
 import { api } from "../api/instance";
@@ -21,8 +20,6 @@ export const Route = createFileRoute("/_auth/criar-conta")({
 });
 
 function RegisterComponent() {
-  const [result, setResult] = useState("");
-
   const {
     formState: { errors },
     handleSubmit,
@@ -61,7 +58,7 @@ function RegisterComponent() {
       }
 
       const message = handleApiError(error);
-      if (message) setResult(message);
+      if (message) setError("form", { message });
     },
   });
 
@@ -70,7 +67,7 @@ function RegisterComponent() {
       <h1>Crie uma conta e comece a conversar!</h1>
 
       <form onSubmit={handleSubmit((credentials) => mutateAsync(credentials))}>
-        <p>{result}</p>
+        <p>{errors.form?.message}</p>
 
         <Input
           autoFocus
