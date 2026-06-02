@@ -3,12 +3,12 @@ import cors from "cors";
 import express from "express";
 import logger from "morgan";
 import { corsOptions } from "./config/cors";
-import { env } from "./config/env";
 import { errorHandler, notFoundHandler } from "./controllers/errors";
 import { authRouter } from "./routes/auth";
 import { indexRouter } from "./routes/index";
 import { messagesRouter } from "./routes/messages";
 import { usersRouter } from "./routes/users";
+import { loggerOptions } from "./config/logger";
 
 export const app = express();
 
@@ -16,7 +16,7 @@ export const app = express();
  * Global middlewares.
  */
 app.use(cors(corsOptions));
-app.use(logger("dev", { skip: () => Boolean(env.nodeEnv === "test") }));
+app.use(logger("dev", loggerOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
