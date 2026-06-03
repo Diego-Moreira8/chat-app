@@ -1,11 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { errorCodes } from "@chat-app/shared/variables";
-import {
-  User,
-  type RegisterUserRequestBody,
-  type RegisterUserResponse,
-} from "@chat-app/shared/validation";
+import { errorCodes, UserRegisterBody, type UserData } from "@chat-app/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
@@ -25,13 +20,13 @@ function RegisterComponent() {
     handleSubmit,
     register,
     setError,
-  } = useForm({ resolver: zodResolver(User.register.request) });
+  } = useForm({ resolver: zodResolver(UserRegisterBody) });
 
   const navigate = Route.useNavigate();
 
   const { isPending, mutateAsync } = useMutation({
-    mutationFn: async ({ username, password }: RegisterUserRequestBody) => {
-      return await api.post<RegisterUserResponse>("/api/v1/auth/register", {
+    mutationFn: async ({ username, password }: UserRegisterBody) => {
+      return await api.post<UserData>("/api/v1/auth/register", {
         username,
         password,
       });

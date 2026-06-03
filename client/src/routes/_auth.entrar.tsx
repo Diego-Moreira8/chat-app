@@ -1,11 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { errorCodes } from "@chat-app/shared/variables";
-import {
-  User,
-  type LoginRequestBody,
-  type LoginResponse,
-} from "@chat-app/shared/validation";
+import { errorCodes, LoginBody, type AccessToken } from "@chat-app/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
@@ -34,7 +29,7 @@ function LoginComponent() {
     handleSubmit,
     register,
     setError,
-  } = useForm({ resolver: zodResolver(User.login.request) });
+  } = useForm({ resolver: zodResolver(LoginBody) });
 
   const { alert } = Route.useSearch();
   const navigate = Route.useNavigate();
@@ -42,8 +37,8 @@ function LoginComponent() {
   const queryClient = useQueryClient();
 
   const postLoginMutation = useMutation({
-    mutationFn: async ({ username, password }: LoginRequestBody) => {
-      const response = await api.post<LoginResponse>(
+    mutationFn: async ({ username, password }: LoginBody) => {
+      const response = await api.post<AccessToken>(
         "/api/v1/auth/login",
         {
           username,
@@ -56,9 +51,7 @@ function LoginComponent() {
 
       return response.data;
     },
-    onSuccess: async (data) => {
-      const { accessToken } = data.auth;
-
+    onSuccess: async ({ accessToken }) => {
       queryClient.setQueryData(["user", "accessToken"], accessToken);
 
       navigate({ to: "/" });

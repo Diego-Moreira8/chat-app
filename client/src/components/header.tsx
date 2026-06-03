@@ -1,10 +1,10 @@
-import type { UserDataResponse } from "@chat-app/shared/validation";
+import { type UserData } from "@chat-app/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { api } from "../api/instance";
 
 interface HeaderProps {
-  userData?: UserDataResponse;
+  userData?: UserData;
 }
 
 export function Header({ userData }: HeaderProps) {

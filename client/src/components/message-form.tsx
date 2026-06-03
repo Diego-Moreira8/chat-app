@@ -1,10 +1,6 @@
+import { CreateMessageBody, type MessageData } from "@chat-app/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/instance";
-import {
-  Message,
-  type CreateMessageRequestBody,
-  type CreateMessageResponse,
-} from "@chat-app/shared/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -16,13 +12,13 @@ export function MessageForm() {
     setError,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(Message.create.request),
+    resolver: zodResolver(CreateMessageBody),
   });
 
   const queryClient = useQueryClient();
 
   const messagesMutation = useMutation({
-    mutationFn: async ({ content }: CreateMessageRequestBody) => {
+    mutationFn: async ({ content }: CreateMessageBody) => {
       const accessToken = queryClient.getQueryData<string>([
         "user",
         "accessToken",
@@ -32,7 +28,7 @@ export function MessageForm() {
         throw new Error("No access token on query data");
       }
 
-      const response = await api.post<CreateMessageResponse>(
+      const response = await api.post<MessageData>(
         "/api/v1/messages",
         { content },
         { headers: { Authorization: `Bearer ${accessToken}` } },

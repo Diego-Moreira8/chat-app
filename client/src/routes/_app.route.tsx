@@ -1,13 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import type { UserDataResponse } from "@chat-app/shared/validation";
+import type { UserData } from "@chat-app/shared";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Header } from "../components/header";
 
 export const Route = createFileRoute("/_app")({
   component: AppRootComponent,
   beforeLoad: ({ context }) => {
-    const userData = context.queryClient.getQueryData<UserDataResponse>([
+    const userData = context.queryClient.getQueryData<UserData>([
       "user",
       "data",
     ]);

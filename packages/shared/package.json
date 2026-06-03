@@ -4,9 +4,14 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./prisma": "./dist/prisma.js",
-    "./validation": "./dist/validation.js",
-    "./variables": "./dist/variables.js"
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./prisma": {
+      "default": "./dist/prisma.js",
+      "types": "./dist/prisma.d.ts"
+    }
   },
   "scripts": {
     "build": "prisma migrate dev && prisma generate && tsc",

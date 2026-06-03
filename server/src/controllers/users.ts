@@ -1,6 +1,6 @@
+import { type UserData } from "@chat-app/shared";
 import { NextFunction, Request, Response } from "express";
 import * as usersService from "../services/users";
-import { RegisterUserResponse } from "@chat-app/shared/validation";
 
 export const getMe = async (
   req: Request,
@@ -20,5 +20,5 @@ export const getMe = async (
       ...user,
       createdAt: user.createdAt.toISOString(),
     },
-  } satisfies RegisterUserResponse);
+  } satisfies UserData);
 };

@@ -41,7 +41,7 @@ describe(`POST ${loginEndpoint}`, () => {
       plainTextPassword: password,
     });
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("auth.accessToken");
+    expect(response.body).toHaveProperty("accessToken");
     expect(cookies).toBeDefined();
     expect(cookies.some((c) => c.startsWith("refreshToken="))).toBe(true);
   });
@@ -55,7 +55,7 @@ describe(`POST ${loginEndpoint}`, () => {
     expect(response.body).toHaveProperty("error.code", "VALIDATION_ERROR");
     expect(response.body).toHaveProperty("error.message");
     expect(response.body).toHaveProperty("error.details");
-    expect(response.body).not.toHaveProperty("auth");
+    expect(response.body).not.toHaveProperty("accessToken");
   });
 
   it("responds with a 401 with invalid credentials", async () => {
@@ -76,7 +76,7 @@ describe(`POST ${loginEndpoint}`, () => {
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty("error.code", "AUTH_ERROR");
     expect(response.body).toHaveProperty("error.message");
-    expect(response.body).not.toHaveProperty("auth");
+    expect(response.body).not.toHaveProperty("accessToken");
   });
 });
 
@@ -111,7 +111,7 @@ describe(`GET ${refreshEndpoint}`, () => {
       .set("Cookie", refreshCookie as string);
 
     expect(refreshResponse.status).toBe(200);
-    expect(refreshResponse.body).toHaveProperty("auth.accessToken");
+    expect(refreshResponse.body).toHaveProperty("accessToken");
   });
 
   it("responds with a 401 when no refresh token cookie is provided", async () => {
@@ -120,7 +120,7 @@ describe(`GET ${refreshEndpoint}`, () => {
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty("error.code", "AUTH_ERROR");
     expect(response.body).toHaveProperty("error.message");
-    expect(response.body).not.toHaveProperty("auth");
+    expect(response.body).not.toHaveProperty("accessToken");
   });
 
   it("responds with a 401 when the refresh token is invalid", async () => {
@@ -131,7 +131,7 @@ describe(`GET ${refreshEndpoint}`, () => {
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty("error.code", "AUTH_ERROR");
     expect(response.body).toHaveProperty("error.message");
-    expect(response.body).not.toHaveProperty("auth");
+    expect(response.body).not.toHaveProperty("accessToken");
   });
 });
 

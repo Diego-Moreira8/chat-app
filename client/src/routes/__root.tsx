@@ -1,9 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import type {
-  LoginResponse,
-  UserDataResponse,
-} from "@chat-app/shared/validation";
+import {
+  accessTokenMaxAge,
+  errorCodes,
+  type AccessToken,
+  type UserData,
+} from "@chat-app/shared";
 import { useQuery, type QueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
@@ -13,14 +15,13 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { api } from "../api/instance";
 import { queryClient } from "../queryClient";
-import { accessTokenMaxAge, errorCodes } from "@chat-app/shared/variables";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 
 export interface RouterContext {
   queryClient?: QueryClient;
   accessToken?: string | null;
-  userData?: UserDataResponse;
+  userData?: UserData;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -69,11 +70,11 @@ function RootComponent() {
       setForcedLogout(false);
 
       try {
-        const response = await api.get<LoginResponse>("/api/v1/auth/refresh", {
+        const response = await api.get<AccessToken>("/api/v1/auth/refresh", {
           withCredentials: true,
         });
 
-        return response.data.auth.accessToken;
+        return response.data.accessToken;
       } catch (error) {
         if (isAxiosError(error)) {
           const invalidRefreshToken =
@@ -99,7 +100,7 @@ function RootComponent() {
     queryKey: ["user", "data"],
     enabled: Boolean(accessTokenQuery.data),
     queryFn: async () => {
-      const response = await api.get<UserDataResponse>("/api/v1/users/me", {
+      const response = await api.get<UserData>("/api/v1/users/me", {
         headers: {
           Authorization: `Bearer ${accessTokenQuery.data}`,
         },

@@ -1,13 +1,13 @@
 import {
   accessTokenMaxAge,
-  errorCodes,
+  LoginBody,
   refreshTokenMaxAge,
-} from "@chat-app/shared/variables";
-import {
-  LoginResponse,
-  RegisterUserResponse,
-  User,
-} from "@chat-app/shared/validation";
+  UserRegisterBody,
+  type AccessToken,
+  type ErrorData,
+  type UserData,
+  type ValidationErrorData,
+} from "@chat-app/shared";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
@@ -18,16 +18,16 @@ export const login = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const validationResult = User.login.request.safeParse(req.body);
+  const validationResult = LoginBody.safeParse(req.body);
 
   if (!validationResult.success) {
     return res.status(400).json({
       error: {
-        code: errorCodes.VALIDATION_ERROR,
+        code: "VALIDATION_ERROR",
         message: "Dados inválidos",
         details: validationResult.error.issues,
       },
-    });
+    } satisfies ValidationErrorData);
   }
 
   const { username, password } = validationResult.data;
@@ -40,10 +40,10 @@ export const login = async (
   if (!user) {
     return res.status(401).json({
       error: {
-        code: errorCodes.AUTH_ERROR,
+        code: "AUTH_ERROR",
         message: "Credenciais inválidas",
       },
-    });
+    } satisfies ErrorData);
   }
 
   const accessToken = jwt.sign({ sub: user.id }, env.jwtSecret, {
@@ -63,10 +63,8 @@ export const login = async (
       secure: true,
     })
     .json({
-      auth: {
-        accessToken,
-      },
-    } satisfies LoginResponse);
+      accessToken,
+    } satisfies AccessToken);
 };
 
 export const logout = async (
@@ -87,10 +85,10 @@ export const refreshAccessToken = async (
   if (!refreshToken) {
     return res.status(401).json({
       error: {
-        code: errorCodes.AUTH_ERROR,
+        code: "AUTH_ERROR",
         message: "You need a refresh token to access this resource",
       },
-    });
+    } satisfies ErrorData);
   }
 
   try {
@@ -107,18 +105,16 @@ export const refreshAccessToken = async (
     });
 
     return res.json({
-      auth: {
-        accessToken,
-      },
-    } satisfies LoginResponse);
+      accessToken,
+    } satisfies AccessToken);
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({
         error: {
-          code: errorCodes.AUTH_ERROR,
+          code: "AUTH_ERROR",
           message: "Invalid refresh token",
         },
-      });
+      } satisfies ErrorData);
     }
 
     return next(error);
@@ -130,16 +126,16 @@ export const register = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const validationResult = User.register.request.safeParse(req.body);
+  const validationResult = UserRegisterBody.safeParse(req.body);
 
   if (!validationResult.success) {
     return res.status(400).json({
       error: {
-        code: errorCodes.VALIDATION_ERROR,
+        code: "VALIDATION_ERROR",
         message: "Dados inválidos",
         details: validationResult.error.issues,
       },
-    });
+    } satisfies ValidationErrorData);
   }
 
   const { username, password } = validationResult.data;
@@ -149,10 +145,10 @@ export const register = async (
   if (usernameTaken) {
     return res.status(409).json({
       error: {
-        code: errorCodes.USERNAME_TAKEN,
+        code: "USERNAME_TAKEN",
         message: `O nome de usuário "${username}" já está em uso`,
       },
-    });
+    } satisfies ErrorData);
   }
 
   const user = await usersService.create({
@@ -165,5 +161,5 @@ export const register = async (
       ...user,
       createdAt: user.createdAt.toISOString(),
     },
-  } satisfies RegisterUserResponse);
+  } satisfies UserData);
 };
