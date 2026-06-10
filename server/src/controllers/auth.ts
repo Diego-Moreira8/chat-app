@@ -47,11 +47,11 @@ export const login = async (
   }
 
   const accessToken = jwt.sign({ sub: user.id }, env.jwtSecret, {
-    expiresIn: accessTokenMaxAge,
+    expiresIn: accessTokenMaxAge / 1000,
   });
 
   const refreshToken = jwt.sign({ sub: user.id }, env.jwtSecret, {
-    expiresIn: refreshTokenMaxAge,
+    expiresIn: refreshTokenMaxAge / 1000,
   });
 
   res
@@ -101,7 +101,7 @@ export const refreshAccessToken = async (
     if (isNaN(parsedSub)) throw new Error("sub must be a number");
 
     const accessToken = jwt.sign({ sub }, env.jwtSecret, {
-      expiresIn: accessTokenMaxAge,
+      expiresIn: accessTokenMaxAge / 1000,
     });
 
     return res.json({
