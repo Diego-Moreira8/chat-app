@@ -8,10 +8,17 @@ import {
   type UserData,
   type ValidationErrorData,
 } from "@chat-app/shared";
-import { NextFunction, Request, Response } from "express";
+import { CookieOptions, NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 import * as usersService from "../services/users";
+
+const refreshTokenCookieOptions: CookieOptions = {
+  httpOnly: true,
+  path: "/",
+  sameSite: "none",
+  secure: true,
+};
 
 export const login = async (
   req: Request,
@@ -56,11 +63,8 @@ export const login = async (
 
   res
     .cookie("refreshToken", refreshToken, {
-      httpOnly: true,
+      ...refreshTokenCookieOptions,
       maxAge: refreshTokenMaxAge,
-      path: "/",
-      sameSite: "none",
-      secure: true,
     })
     .json({
       accessToken,
@@ -72,7 +76,7 @@ export const logout = async (
   res: Response,
   next: NextFunction,
 ) => {
-  res.clearCookie("refreshToken").sendStatus(204);
+  res.clearCookie("refreshToken", refreshTokenCookieOptions).sendStatus(204);
 };
 
 export const refreshAccessToken = async (
