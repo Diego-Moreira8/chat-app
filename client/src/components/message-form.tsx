@@ -24,10 +24,6 @@ export function MessageForm() {
         "accessToken",
       ]);
 
-      if (!accessToken) {
-        throw new Error("No access token on query data");
-      }
-
       const response = await api.post<MessageDataResponse>(
         "/api/v1/messages",
         { content },

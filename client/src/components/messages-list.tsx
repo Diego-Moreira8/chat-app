@@ -4,13 +4,18 @@ import { useRouteContext } from "@tanstack/react-router";
 import { api } from "../api/instance";
 
 export function MessagesList() {
-  const { accessToken } = useRouteContext({ from: "/_app" });
+  const { queryClient } = useRouteContext({ from: "/_app" });
 
   const { data, isLoading, isRefetching, isError } = useQuery({
     queryKey: ["messages"],
     staleTime: 5000,
     refetchInterval: 5000,
     queryFn: async () => {
+      const accessToken = queryClient.getQueryData<string>([
+        "user",
+        "accessToken",
+      ]);
+
       const response = await api.get<MessageDataResponse>("/api/v1/messages", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
@@ -56,7 +61,7 @@ export function MessagesList() {
       {messagesData && (
         <ul>
           {messagesData.map((msg) => (
-            <li>
+            <li key={msg.id}>
               <p>
                 <i>
                   <b>{msg.owner.username}</b> em {msg.createdAt}
