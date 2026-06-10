@@ -43,6 +43,13 @@ export const GetMessagesQuery = z.object({
     .optional(),
 });
 
+export const DeleteMessageParams = z.object({
+  id: z.coerce
+    .number({ error: "'id' precisa ser um número" })
+    .min(1, { error: "'id' precisa ser um número maior que 0" })
+    .nonoptional({ error: "Um 'id' precisa ser informado" }),
+});
+
 /*******************************************************************************
  * Variables
  */
@@ -53,6 +60,7 @@ export const refreshTokenMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
 export const errorCodes = {
   AUTH_ERROR: "AUTH_ERROR",
   INVALID_ENDPOINT: "INVALID_ENDPOINT",
+  INSUFFICIENT_PERMISSIONS: "INSUFFICIENT_PERMISSIONS",
   USERNAME_TAKEN: "USERNAME_TAKEN",
   VALIDATION_ERROR: "VALIDATION_ERROR",
 };

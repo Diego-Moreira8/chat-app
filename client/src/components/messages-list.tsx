@@ -1,7 +1,63 @@
-import type { MessageDataResponse } from "@chat-app/shared";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import type { MessageDataResponse, MessageData } from "@chat-app/shared";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { useRouteContext } from "@tanstack/react-router";
 import { api } from "../api/instance";
+
+interface MessageProps {
+  messageData: MessageData;
+}
+
+function Message({
+  messageData: { id, content, createdAt, owner },
+}: MessageProps) {
+  const { queryClient, userData } = useRouteContext({ from: "/_app" });
+
+  const deleteMessageMutation = useMutation({
+    mutationFn: async ({ id }: { id: number }) => {
+      const accessToken = queryClient.getQueryData<string>([
+        "user",
+        "accessToken",
+      ]);
+
+      const response = await api.delete(`/api/v1/messages/${id}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+    },
+    onError: () => {},
+  });
+
+  return (
+    <li>
+      <p>
+        <i>
+          {id} <b>{owner.username}</b> em {createdAt}
+        </i>
+      </p>
+
+      <p>{content}</p>
+
+      {owner.username === userData.user.username && (
+        <div>
+          <span>Opções: </span>
+          <button
+            onClick={() => deleteMessageMutation.mutateAsync({ id })}
+            type="button"
+            disabled={deleteMessageMutation.isPending}
+          >
+            {deleteMessageMutation.isPending ? "⌛ Apagando..." : "Apagar"}
+          </button>
+        </div>
+      )}
+
+      <hr />
+    </li>
+  );
+}
 
 export function MessagesList() {
   const { queryClient } = useRouteContext({ from: "/_app" });
@@ -64,17 +120,7 @@ export function MessagesList() {
       {messagesData && (
         <ul>
           {messagesData.map((msg) => (
-            <li key={msg.id}>
-              <p>
-                <i>
-                  {msg.id} <b>{msg.owner.username}</b> em {msg.createdAt}
-                </i>
-              </p>
-
-              <p>{msg.content}</p>
-
-              <hr />
-            </li>
+            <Message key={msg.id} messageData={msg} />
           ))}
         </ul>
       )}

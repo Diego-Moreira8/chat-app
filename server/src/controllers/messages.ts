@@ -1,6 +1,8 @@
 import {
   CreateMessageBody,
+  DeleteMessageParams,
   GetMessagesQuery,
+  type ErrorData,
   type MessageDataResponse,
   type ValidationErrorData,
 } from "@chat-app/shared";
@@ -40,6 +42,45 @@ export const createMessage = async (
       },
     ],
   } satisfies MessageDataResponse);
+};
+
+export const deleteMessage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const validationResult = DeleteMessageParams.safeParse(req.params);
+
+  if (!validationResult.success) {
+    return res.status(400).json({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Dados inválidos",
+        details: validationResult.error.issues,
+      },
+    } satisfies ValidationErrorData);
+  }
+
+  const { id } = validationResult.data;
+
+  const message = await msgsService.findById(id, { withUserId: true });
+
+  if (!message) return res.sendStatus(404);
+
+  const userOwnsMessage = message.owner.id === res.locals.sub;
+
+  if (!userOwnsMessage) {
+    return res.status(403).json({
+      error: {
+        code: "INSUFFICIENT_PERMISSIONS",
+        message: "You must own the message to delete it",
+      },
+    } satisfies ErrorData);
+  }
+
+  await msgsService.deleteMessage(id);
+
+  res.sendStatus(204);
 };
 
 export const getMessagesDescending = async (

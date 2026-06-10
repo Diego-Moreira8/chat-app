@@ -4,5 +4,6 @@ import { auth } from "../middlewares/auth";
 
 export const messagesRouter = express.Router();
 
-messagesRouter.get("/", auth, msgsController.getMessagesDescending);
 messagesRouter.post("/", auth, msgsController.createMessage);
+messagesRouter.get("/", auth, msgsController.getMessagesDescending);
+messagesRouter.delete("/:id", auth, msgsController.deleteMessage);

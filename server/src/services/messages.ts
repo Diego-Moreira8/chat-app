@@ -11,6 +11,10 @@ interface GetMessagesQuery {
   take: number;
 }
 
+interface Options {
+  withUserId?: boolean;
+}
+
 export const create = async ({ ownerId, content }: NewMessagePayload) => {
   const newMessage = await prisma.message.create({
     data: {
@@ -30,6 +34,45 @@ export const create = async ({ ownerId, content }: NewMessagePayload) => {
   });
 
   return newMessage;
+};
+
+export const deleteMessage = async (id: number) => {
+  const deletedMessage = await prisma.message.delete({
+    where: { id },
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      owner: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+
+  return deletedMessage;
+};
+
+export const findById = async (id: number, options?: Options) => {
+  const messageFound = await prisma.message.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      owner: {
+        select: {
+          id: Boolean(options?.withUserId),
+          username: true,
+        },
+      },
+    },
+  });
+
+  return messageFound;
 };
 
 export const getDescending = async ({
