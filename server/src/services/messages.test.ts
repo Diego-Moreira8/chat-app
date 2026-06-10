@@ -41,9 +41,16 @@ it("creates a new message and return the correct object", async () => {
 });
 
 it("returns an correct array of messages", async () => {
-  await msgsService.get();
+  await msgsService.getDescending({
+    cursor: 5,
+    skip: 1,
+    take: 10,
+  });
 
   expect(prisma.message.findMany).toHaveBeenCalledExactlyOnceWith({
+    cursor: { id: 5 },
+    skip: 1,
+    take: 10,
     select: {
       id: true,
       content: true,
@@ -54,5 +61,6 @@ it("returns an correct array of messages", async () => {
         },
       },
     },
+    orderBy: { id: "desc" },
   });
 });

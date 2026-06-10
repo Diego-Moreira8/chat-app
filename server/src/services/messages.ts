@@ -5,6 +5,12 @@ interface NewMessagePayload {
   ownerId: number;
 }
 
+interface GetMessagesQuery {
+  cursor?: number;
+  skip: number;
+  take: number;
+}
+
 export const create = async ({ ownerId, content }: NewMessagePayload) => {
   const newMessage = await prisma.message.create({
     data: {
@@ -26,8 +32,15 @@ export const create = async ({ ownerId, content }: NewMessagePayload) => {
   return newMessage;
 };
 
-export const get = async () => {
+export const getDescending = async ({
+  cursor,
+  skip,
+  take,
+}: GetMessagesQuery) => {
   const messages = await prisma.message.findMany({
+    ...(cursor && { cursor: { id: cursor } }),
+    ...(cursor && { skip }),
+    take,
     select: {
       id: true,
       content: true,
@@ -38,6 +51,7 @@ export const get = async () => {
         },
       },
     },
+    orderBy: { id: "desc" },
   });
 
   return messages;

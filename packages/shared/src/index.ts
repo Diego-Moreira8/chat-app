@@ -36,6 +36,13 @@ export const CreateMessageBody = z.object({
     .max(250, "Mensagens podem ter no máximo 250 caracteres"),
 });
 
+export const GetMessagesQuery = z.object({
+  cursor: z.coerce
+    .number({ error: "'cursor' precisa ser um número" })
+    .min(1, { error: "'cursor' precisa ser um número maior que 0" })
+    .optional(),
+});
+
 /*******************************************************************************
  * Variables
  */
@@ -84,6 +91,7 @@ export type MessageData = {
 
 export type MessageDataResponse = {
   data: MessageData[];
+  nextCursor?: number | null;
 };
 
 export type ErrorCode = keyof typeof errorCodes;

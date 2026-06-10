@@ -1,42 +1,44 @@
 import type { MessageDataResponse } from "@chat-app/shared";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRouteContext } from "@tanstack/react-router";
 import { api } from "../api/instance";
 
 export function MessagesList() {
   const { queryClient } = useRouteContext({ from: "/_app" });
 
-  const { data, isLoading, isRefetching, isError } = useQuery({
+  const {
+    data,
+    isLoading,
+    isRefetching,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    isError,
+  } = useInfiniteQuery({
     queryKey: ["messages"],
     staleTime: 5000,
     refetchInterval: 5000,
-    queryFn: async () => {
+    queryFn: async ({ pageParam }) => {
       const accessToken = queryClient.getQueryData<string>([
         "user",
         "accessToken",
       ]);
 
-      const response = await api.get<MessageDataResponse>("/api/v1/messages", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const response = await api.get<MessageDataResponse>(
+        `/api/v1/messages${pageParam === Infinity ? "" : `?cursor=${pageParam}`}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
 
       return response.data;
     },
+    initialPageParam: Infinity, // Cannot start at 0 for a descending cursor
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
-  const messagesData = data?.data
-    .map((msg) => ({
+  const messagesData = data?.pages.flatMap((page) =>
+    page.data.map((msg) => ({
       ...msg,
-      createdAt: new Date(msg.createdAt),
-    }))
-    .sort((a, b) => {
-      if (a.createdAt < b.createdAt) return 1;
-      if (a.createdAt > b.createdAt) return -1;
-      return 0;
-    })
-    .map((msg) => ({
-      ...msg,
-      createdAt: msg.createdAt.toLocaleDateString("pt-BR", {
+      createdAt: new Date(msg.createdAt).toLocaleDateString("pt-BR", {
         year: "2-digit",
         month: "short",
         day: "numeric",
@@ -44,7 +46,8 @@ export function MessagesList() {
         minute: "2-digit",
         second: "2-digit",
       }),
-    }));
+    })),
+  );
 
   return (
     <>
@@ -64,7 +67,7 @@ export function MessagesList() {
             <li key={msg.id}>
               <p>
                 <i>
-                  <b>{msg.owner.username}</b> em {msg.createdAt}
+                  {msg.id} <b>{msg.owner.username}</b> em {msg.createdAt}
                 </i>
               </p>
 
@@ -75,6 +78,17 @@ export function MessagesList() {
           ))}
         </ul>
       )}
+
+      <button
+        onClick={() => fetchNextPage()}
+        type="button"
+        disabled={isFetchingNextPage || !hasNextPage}
+      >
+        Carregar mais
+      </button>
+
+      {isFetchingNextPage && <span>⌛ Carregando próxima página...</span>}
+      {!hasNextPage && <span>✅ Não há mais mensagens</span>}
     </>
   );
 }

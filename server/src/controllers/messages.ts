@@ -1,5 +1,6 @@
 import {
   CreateMessageBody,
+  GetMessagesQuery,
   type MessageDataResponse,
   type ValidationErrorData,
 } from "@chat-app/shared";
@@ -41,12 +42,30 @@ export const createMessage = async (
   } satisfies MessageDataResponse);
 };
 
-export const getMessage = async (
+export const getMessagesDescending = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const messages = await msgsService.get();
+  const validationResult = GetMessagesQuery.safeParse(req.query);
+
+  if (!validationResult.success) {
+    return res.status(400).json({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Dados inválidos",
+        details: validationResult.error.issues,
+      },
+    } satisfies ValidationErrorData);
+  }
+
+  const { cursor } = validationResult.data;
+
+  const messages = await msgsService.getDescending({
+    cursor,
+    skip: 1,
+    take: 10,
+  });
 
   const mappedMessages = messages.map((msg) => ({
     ...msg,
@@ -55,5 +74,6 @@ export const getMessage = async (
 
   res.json({
     data: mappedMessages,
+    nextCursor: mappedMessages[mappedMessages.length - 1]?.id || null,
   } satisfies MessageDataResponse);
 };
