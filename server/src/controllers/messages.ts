@@ -1,6 +1,6 @@
 import {
   CreateMessageBody,
-  type MessageData,
+  type MessageDataResponse,
   type ValidationErrorData,
 } from "@chat-app/shared";
 import { NextFunction, Request, Response } from "express";
@@ -32,9 +32,28 @@ export const createMessage = async (
   const message = await msgsService.create({ ownerId, content });
 
   res.json({
-    message: {
-      ...message,
-      createdAt: message.createdAt.toISOString(),
-    },
-  } satisfies MessageData);
+    data: [
+      {
+        ...message,
+        createdAt: message.createdAt.toISOString(),
+      },
+    ],
+  } satisfies MessageDataResponse);
+};
+
+export const getMessage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const messages = await msgsService.get();
+
+  const mappedMessages = messages.map((msg) => ({
+    ...msg,
+    createdAt: msg.createdAt.toISOString(),
+  }));
+
+  res.json({
+    data: mappedMessages,
+  } satisfies MessageDataResponse);
 };

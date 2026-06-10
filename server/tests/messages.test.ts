@@ -49,10 +49,7 @@ describe(`POST ${messagesEndpoint}`, () => {
     });
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
-      message: {
-        ...message,
-        createdAt: createdAt.toISOString(),
-      },
+      data: [{ ...message, createdAt: createdAt.toISOString() }],
     });
   });
 

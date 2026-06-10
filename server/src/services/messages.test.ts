@@ -5,6 +5,7 @@ vi.mock("@chat-app/shared/prisma", () => ({
   prisma: {
     message: {
       create: vi.fn(),
+      findMany: vi.fn(),
     },
   },
 }));
@@ -26,6 +27,23 @@ it("creates a new message and return the correct object", async () => {
       ownerId: 1,
       content: validContent,
     },
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      owner: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+});
+
+it("returns an correct array of messages", async () => {
+  await msgsService.get();
+
+  expect(prisma.message.findMany).toHaveBeenCalledExactlyOnceWith({
     select: {
       id: true,
       content: true,

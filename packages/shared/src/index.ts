@@ -74,14 +74,16 @@ export type AccessToken = {
 export type CreateMessageBody = z.infer<typeof CreateMessageBody>;
 
 export type MessageData = {
-  message: {
-    id: number;
-    content: string;
-    createdAt: string; // Must convert from Date using .toISOString()
-    owner: {
-      username: string;
-    };
+  id: number;
+  content: string;
+  createdAt: string; // Must convert from Date using .toISOString()
+  owner: {
+    username: string;
   };
+};
+
+export type MessageDataResponse = {
+  data: MessageData[];
 };
 
 export type ErrorCode = keyof typeof errorCodes;

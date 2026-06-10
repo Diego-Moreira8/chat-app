@@ -1,4 +1,4 @@
-import { CreateMessageBody, type MessageData } from "@chat-app/shared";
+import { CreateMessageBody, type MessageDataResponse } from "@chat-app/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/instance";
 import { useForm } from "react-hook-form";
@@ -28,7 +28,7 @@ export function MessageForm() {
         throw new Error("No access token on query data");
       }
 
-      const response = await api.post<MessageData>(
+      const response = await api.post<MessageDataResponse>(
         "/api/v1/messages",
         { content },
         { headers: { Authorization: `Bearer ${accessToken}` } },

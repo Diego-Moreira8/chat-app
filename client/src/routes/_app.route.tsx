@@ -7,12 +7,17 @@ import { Header } from "../components/header";
 export const Route = createFileRoute("/_app")({
   component: AppRootComponent,
   beforeLoad: ({ context }) => {
+    const accessToken = context.queryClient.getQueryData<string>([
+      "user",
+      "accessToken",
+    ]);
+
     const userData = context.queryClient.getQueryData<UserData>([
       "user",
       "data",
     ]);
 
-    if (!userData) {
+    if (!accessToken || !userData) {
       throw redirect({
         to: "/entrar",
         search: { alert: "Você precisa entrar para acessar o chat." },
@@ -20,12 +25,16 @@ export const Route = createFileRoute("/_app")({
     }
 
     // Pass the user data down to all app routes
-    return { userData };
+    return {
+      accessToken,
+      userData,
+    };
   },
 });
 
 function AppRootComponent() {
   const { userData } = Route.useRouteContext();
+
   return (
     <>
       <Header userData={userData} />

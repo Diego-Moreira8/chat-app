@@ -25,3 +25,20 @@ export const create = async ({ ownerId, content }: NewMessagePayload) => {
 
   return newMessage;
 };
+
+export const get = async () => {
+  const messages = await prisma.message.findMany({
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      owner: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+
+  return messages;
+};
