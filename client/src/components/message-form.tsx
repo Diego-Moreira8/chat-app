@@ -1,8 +1,9 @@
 import { CreateMessageBody, type MessageDataResponse } from "@chat-app/shared";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { api } from "../api/instance";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouteContext } from "@tanstack/react-router";
 
 export function MessageForm() {
   const {
@@ -15,9 +16,9 @@ export function MessageForm() {
     resolver: zodResolver(CreateMessageBody),
   });
 
-  const queryClient = useQueryClient();
+  const { queryClient } = useRouteContext({ from: "/_app" });
 
-  const messagesMutation = useMutation({
+  const { isPending, mutateAsync } = useMutation({
     mutationFn: async ({ content }: CreateMessageBody) => {
       const accessToken = queryClient.getQueryData<string>([
         "user",
@@ -33,6 +34,7 @@ export function MessageForm() {
       return response.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
       resetField("content");
     },
     onError: () => {
@@ -44,22 +46,18 @@ export function MessageForm() {
   });
 
   return (
-    <form
-      onSubmit={handleSubmit(({ content }) =>
-        messagesMutation.mutateAsync({ content }),
-      )}
-    >
+    <form onSubmit={handleSubmit(({ content }) => mutateAsync({ content }))}>
       <p>{errors.form?.message || errors.content?.message}</p>
 
       <input
         autoFocus
         type="text"
-        disabled={messagesMutation.isPending}
+        disabled={isPending}
         {...register("content")}
       />
 
-      <button type="submit" disabled={messagesMutation.isPending}>
-        {messagesMutation.isPending ? "Enviando..." : "Enviar"}
+      <button type="submit" disabled={isPending}>
+        {isPending ? "Enviando..." : "Enviar"}
       </button>
     </form>
   );
