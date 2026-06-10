@@ -48,22 +48,6 @@
       "runOptions": {
         "runOn": "folderOpen"
       }
-    },
-    {
-      "label": "prisma studio",
-      "type": "shell",
-      "command": "npm run studio",
-      "icon": { "color": "terminal.ansiCyan", "id": "database" },
-      "options": {
-        "cwd": "/home/diego/chat-app/packages/shared"
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      },
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
     }
   ]
 }
