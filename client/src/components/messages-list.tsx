@@ -3,63 +3,18 @@ import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { useRouteContext } from "@tanstack/react-router";
 import { api } from "../api/instance";
 
+interface MessagesListProps {
+  messageToEdit: MessageData | null;
+  onEdit: React.Dispatch<React.SetStateAction<MessageData | null>>;
+}
+
 interface MessageProps {
   messageData: MessageData;
+  messageToEdit: MessageData | null;
+  onEdit: React.Dispatch<React.SetStateAction<MessageData | null>>;
 }
 
-function Message({
-  messageData: { id, content, createdAt, owner },
-}: MessageProps) {
-  const { queryClient, userData } = useRouteContext({ from: "/_app" });
-
-  const deleteMessageMutation = useMutation({
-    mutationFn: async ({ id }: { id: number }) => {
-      const accessToken = queryClient.getQueryData<string>([
-        "user",
-        "accessToken",
-      ]);
-
-      const response = await api.delete(`/api/v1/messages/${id}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
-    },
-    onError: () => {},
-  });
-
-  return (
-    <li>
-      <p>
-        <i>
-          {id} <b>{owner.username}</b> em {createdAt}
-        </i>
-      </p>
-
-      <p>{content}</p>
-
-      {owner.username === userData.user.username && (
-        <div>
-          <span>Opções: </span>
-          <button
-            onClick={() => deleteMessageMutation.mutateAsync({ id })}
-            type="button"
-            disabled={deleteMessageMutation.isPending}
-          >
-            {deleteMessageMutation.isPending ? "⌛ Apagando..." : "Apagar"}
-          </button>
-        </div>
-      )}
-
-      <hr />
-    </li>
-  );
-}
-
-export function MessagesList() {
+export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
   const { queryClient } = useRouteContext({ from: "/_app" });
 
   const {
@@ -120,7 +75,12 @@ export function MessagesList() {
       {messagesData && (
         <ul>
           {messagesData.map((msg) => (
-            <Message key={msg.id} messageData={msg} />
+            <Message
+              key={msg.id}
+              messageData={msg}
+              messageToEdit={messageToEdit}
+              onEdit={onEdit}
+            />
           ))}
         </ul>
       )}
@@ -136,5 +96,70 @@ export function MessagesList() {
       {isFetchingNextPage && <span>⌛ Carregando próxima página...</span>}
       {!hasNextPage && <span>✅ Não há mais mensagens</span>}
     </>
+  );
+}
+
+function Message({ messageData, messageToEdit, onEdit }: MessageProps) {
+  const { id, content, createdAt, owner } = messageData;
+  const isEditingCurrentMessage = messageToEdit?.id === messageData.id;
+
+  const { queryClient, userData } = useRouteContext({ from: "/_app" });
+
+  const deleteMessageMutation = useMutation({
+    mutationFn: async ({ id }: { id: number }) => {
+      const accessToken = queryClient.getQueryData<string>([
+        "user",
+        "accessToken",
+      ]);
+
+      const response = await api.delete(`/api/v1/messages/${id}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      if (isEditingCurrentMessage) onEdit(null);
+    },
+    onError: () => {
+      // TODO
+    },
+  });
+
+  return (
+    <li>
+      <p>
+        <i>
+          #{id} <b>{owner.username}</b> em {createdAt}
+        </i>
+      </p>
+
+      <p>{content}</p>
+
+      {owner.username === userData.user.username && (
+        <div>
+          <span>Opções: </span>
+
+          <button
+            onClick={() => deleteMessageMutation.mutateAsync({ id })}
+            type="button"
+            disabled={deleteMessageMutation.isPending}
+          >
+            {deleteMessageMutation.isPending ? "⌛ Apagando..." : "Apagar"}
+          </button>
+
+          <button
+            onClick={() => onEdit(messageData)}
+            type="button"
+            disabled={isEditingCurrentMessage}
+          >
+            {isEditingCurrentMessage ? "Editando" : "Editar"}
+          </button>
+        </div>
+      )}
+
+      <hr />
+    </li>
   );
 }

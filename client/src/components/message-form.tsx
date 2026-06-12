@@ -1,24 +1,40 @@
-import { CreateMessageBody, type MessageDataResponse } from "@chat-app/shared";
-import { useMutation } from "@tanstack/react-query";
-import { api } from "../api/instance";
-import { useForm } from "react-hook-form";
+import {
+  CreateMessageBody,
+  type MessageData,
+  type MessageDataResponse,
+} from "@chat-app/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { useRouteContext } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { api } from "../api/instance";
 
-export function MessageForm() {
+interface MessageFormProps {
+  messageToEdit: MessageData | null;
+  onSubmitMessageChanges: (newData: MessageData) => void;
+  updateMessageStatus: "error" | "idle" | "pending" | "success";
+}
+
+export function MessageForm({
+  messageToEdit,
+  onSubmitMessageChanges,
+  updateMessageStatus,
+}: MessageFormProps) {
   const {
+    formState: { errors },
     handleSubmit,
     register,
     resetField,
     setError,
-    formState: { errors },
+    setValue,
   } = useForm({
     resolver: zodResolver(CreateMessageBody),
   });
 
   const { queryClient } = useRouteContext({ from: "/_app" });
 
-  const { isPending, mutateAsync } = useMutation({
+  const newMessageMutation = useMutation({
     mutationFn: async ({ content }: CreateMessageBody) => {
       const accessToken = queryClient.getQueryData<string>([
         "user",
@@ -45,19 +61,52 @@ export function MessageForm() {
     },
   });
 
+  useEffect(() => {
+    setValue("content", messageToEdit?.content || "");
+  }, [setValue, messageToEdit]);
+
   return (
-    <form onSubmit={handleSubmit(({ content }) => mutateAsync({ content }))}>
+    <form
+      onSubmit={handleSubmit(({ content }) => {
+        if (messageToEdit) {
+          onSubmitMessageChanges({
+            ...messageToEdit,
+            content,
+          });
+
+          return;
+        }
+
+        newMessageMutation.mutateAsync({ content });
+      })}
+    >
       <p>{errors.form?.message || errors.content?.message}</p>
 
+      <label htmlFor="message">
+        {messageToEdit ? "Editando mensagem" : "Nova mensagem"}
+      </label>
       <input
         autoFocus
+        id="message"
         type="text"
-        disabled={isPending}
-        {...register("content")}
+        {...register("content", {
+          disabled: newMessageMutation.isPending,
+        })}
       />
 
-      <button type="submit" disabled={isPending}>
-        {isPending ? "Enviando..." : "Enviar"}
+      <button
+        type="submit"
+        disabled={
+          newMessageMutation.isPending || updateMessageStatus === "pending"
+        }
+      >
+        {messageToEdit &&
+          (updateMessageStatus === "pending"
+            ? "Salvando alterações..."
+            : "Salvar alterações")}
+
+        {!messageToEdit &&
+          (newMessageMutation.isPending ? "Enviando..." : "Enviar")}
       </button>
     </form>
   );

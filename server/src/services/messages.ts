@@ -11,6 +11,11 @@ interface GetMessagesQuery {
   take: number;
 }
 
+interface UpdateMessagePayload {
+  id: number;
+  newContent: string;
+}
+
 interface Options {
   withUserId?: boolean;
 }
@@ -98,4 +103,26 @@ export const getDescending = async ({
   });
 
   return messages;
+};
+
+export const updateMessage = async ({
+  id,
+  newContent,
+}: UpdateMessagePayload) => {
+  const updatedMessage = await prisma.message.update({
+    where: { id },
+    data: { content: newContent },
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      owner: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+
+  return updatedMessage;
 };

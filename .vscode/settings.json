@@ -2,7 +2,7 @@
   /**
    * Code Spell Checker Extension
    */
-  "cSpell.words": ["autoincrement", "datasource", "nodenext"],
+  "cSpell.words": ["autoincrement", "datasource", "nodenext", "nonoptional"],
 
   /**
    * Tanstack Router

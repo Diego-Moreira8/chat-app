@@ -2,6 +2,7 @@ import {
   CreateMessageBody,
   DeleteMessageParams,
   GetMessagesQuery,
+  UpdateMessageParams,
   type ErrorData,
   type MessageDataResponse,
   type ValidationErrorData,
@@ -117,4 +118,59 @@ export const getMessagesDescending = async (
     data: mappedMessages,
     nextCursor: mappedMessages[mappedMessages.length - 1]?.id || null,
   } satisfies MessageDataResponse);
+};
+
+export const updateMessage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const paramsValidationResult = UpdateMessageParams.safeParse(req.params);
+
+  if (!paramsValidationResult.success) {
+    return res.status(400).json({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Dados inválidos",
+        details: paramsValidationResult.error.issues,
+      },
+    } satisfies ValidationErrorData);
+  }
+
+  const bodyValidationResult = CreateMessageBody.safeParse(req.body);
+
+  if (!bodyValidationResult.success) {
+    return res.status(400).json({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Dados inválidos",
+        details: bodyValidationResult.error.issues,
+      },
+    } satisfies ValidationErrorData);
+  }
+
+  const { id } = paramsValidationResult.data;
+  const { content } = bodyValidationResult.data;
+
+  const message = await msgsService.findById(id, { withUserId: true });
+
+  if (!message) return res.sendStatus(404);
+
+  const userOwnsMessage = message.owner.id === res.locals.sub;
+
+  if (!userOwnsMessage) {
+    return res.status(403).json({
+      error: {
+        code: "INSUFFICIENT_PERMISSIONS",
+        message: "You must own the message to change it",
+      },
+    } satisfies ErrorData);
+  }
+
+  const updatedMessage = await msgsService.updateMessage({
+    id,
+    newContent: content,
+  });
+
+  res.json({ updatedMessage });
 };

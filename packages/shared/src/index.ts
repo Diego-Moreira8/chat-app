@@ -50,6 +50,13 @@ export const DeleteMessageParams = z.object({
     .nonoptional({ error: "Um 'id' precisa ser informado" }),
 });
 
+export const UpdateMessageParams = z.object({
+  id: z.coerce
+    .number({ error: "'id' precisa ser um número" })
+    .min(1, { error: "'id' precisa ser um número maior que 0" })
+    .nonoptional({ error: "Um 'id' precisa ser informado" }),
+});
+
 /*******************************************************************************
  * Variables
  */
