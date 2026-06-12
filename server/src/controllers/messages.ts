@@ -39,7 +39,18 @@ export const createMessage = async (
     data: [
       {
         ...message,
+
         createdAt: message.createdAt.toISOString(),
+
+        updatedAt:
+          message.updatedAt instanceof Date
+            ? message.updatedAt.toISOString()
+            : null,
+
+        deletedAt:
+          message.deletedAt instanceof Date
+            ? message.deletedAt.toISOString()
+            : null,
       },
     ],
   } satisfies MessageDataResponse);
@@ -111,7 +122,14 @@ export const getMessagesDescending = async (
 
   const mappedMessages = messages.map((msg) => ({
     ...msg,
+
     createdAt: msg.createdAt.toISOString(),
+
+    updatedAt:
+      msg.updatedAt instanceof Date ? msg.updatedAt.toISOString() : null,
+
+    deletedAt:
+      msg.deletedAt instanceof Date ? msg.deletedAt.toISOString() : null,
   }));
 
   res.json({
@@ -172,5 +190,23 @@ export const updateMessage = async (
     newContent: content,
   });
 
-  res.json({ updatedMessage });
+  res.json({
+    data: [
+      {
+        ...updatedMessage,
+
+        createdAt: updatedMessage.createdAt.toISOString(),
+
+        updatedAt:
+          updatedMessage.updatedAt instanceof Date
+            ? updatedMessage.updatedAt.toISOString()
+            : null,
+
+        deletedAt:
+          updatedMessage.deletedAt instanceof Date
+            ? updatedMessage.deletedAt.toISOString()
+            : null,
+      },
+    ],
+  } satisfies MessageDataResponse);
 };

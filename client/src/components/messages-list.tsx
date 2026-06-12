@@ -100,7 +100,7 @@ export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
 }
 
 function Message({ messageData, messageToEdit, onEdit }: MessageProps) {
-  const { id, content, createdAt, owner } = messageData;
+  const { id, content, createdAt, updatedAt, deletedAt, owner } = messageData;
   const isEditingCurrentMessage = messageToEdit?.id === messageData.id;
 
   const { queryClient, userData } = useRouteContext({ from: "/_app" });
@@ -131,13 +131,14 @@ function Message({ messageData, messageToEdit, onEdit }: MessageProps) {
     <li>
       <p>
         <i>
-          #{id} <b>{owner.username}</b> em {createdAt}
+          #{id} <b>{owner.username}</b> em {createdAt}{" "}
+          {updatedAt && !deletedAt && "(editada)"}
         </i>
       </p>
 
-      <p>{content}</p>
+      <p>{deletedAt ? <i>[Mensagem apagada]</i> : content}</p>
 
-      {owner.username === userData.user.username && (
+      {owner.username === userData.user.username && !deletedAt && (
         <div>
           <span>Opções: </span>
 

@@ -97,8 +97,10 @@ export type CreateMessageBody = z.infer<typeof CreateMessageBody>;
 
 export type MessageData = {
   id: number;
-  content: string;
+  content: string | null; // null if message was deleted
   createdAt: string; // Must convert from Date using .toISOString()
+  updatedAt: string | null; // Must convert from Date using .toISOString()
+  deletedAt: string | null; // Must convert from Date using .toISOString()
   owner: {
     username: string;
   };

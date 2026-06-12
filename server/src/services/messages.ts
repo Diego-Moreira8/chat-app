@@ -30,6 +30,8 @@ export const create = async ({ ownerId, content }: NewMessagePayload) => {
       id: true,
       content: true,
       createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
       owner: {
         select: {
           username: true,
@@ -42,12 +44,18 @@ export const create = async ({ ownerId, content }: NewMessagePayload) => {
 };
 
 export const deleteMessage = async (id: number) => {
-  const deletedMessage = await prisma.message.delete({
+  const deletedMessage = await prisma.message.update({
     where: { id },
+    data: {
+      content: null,
+      deletedAt: new Date(),
+    },
     select: {
       id: true,
       content: true,
       createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
       owner: {
         select: {
           username: true,
@@ -68,6 +76,8 @@ export const findById = async (id: number, options?: Options) => {
       id: true,
       content: true,
       createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
       owner: {
         select: {
           id: Boolean(options?.withUserId),
@@ -93,6 +103,8 @@ export const getDescending = async ({
       id: true,
       content: true,
       createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
       owner: {
         select: {
           username: true,
@@ -111,11 +123,16 @@ export const updateMessage = async ({
 }: UpdateMessagePayload) => {
   const updatedMessage = await prisma.message.update({
     where: { id },
-    data: { content: newContent },
+    data: {
+      content: newContent,
+      updatedAt: new Date(),
+    },
     select: {
       id: true,
       content: true,
       createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
       owner: {
         select: {
           username: true,
