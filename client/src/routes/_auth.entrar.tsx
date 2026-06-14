@@ -2,13 +2,13 @@
 
 import { errorCodes, LoginBody, type AccessToken } from "@chat-app/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { handleApiError } from "../api/handle-api-errors";
 import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface LoginSearchParams {
   alert?: string;
@@ -40,13 +40,8 @@ function LoginComponent() {
     mutationFn: async ({ username, password }: LoginBody) => {
       const response = await api.post<AccessToken>(
         "/api/v1/auth/login",
-        {
-          username,
-          password,
-        },
-        {
-          withCredentials: true,
-        },
+        { username, password },
+        { withCredentials: true },
       );
 
       return response.data;
@@ -77,7 +72,11 @@ function LoginComponent() {
 
   return (
     <>
-      <h1>Entre com a sua conta</h1>
+      <h1 className="text-center text-4xl font-bold">Entrar</h1>
+
+      <p className="text-center">
+        Já tem uma conta? Entre com suas credenciais e volte a conversar!
+      </p>
 
       <form
         onSubmit={handleSubmit((credentials) =>

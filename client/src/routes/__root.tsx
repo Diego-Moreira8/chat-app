@@ -12,11 +12,15 @@ import {
   Link,
   Outlet,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { api } from "../api/instance";
-import { queryClient } from "../queryClient";
+// import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
+import { api } from "../api/instance";
+import { AppBackground } from "../components/app-background";
+import { LoadingScreen } from "../components/loading-screen";
+import { WakeUpErrorScreen } from "../components/wake-up-error-screen";
+import { AuthenticatingScreen } from "../components/authenticating-screen";
+import { queryClient } from "../queryClient";
 
 export interface RouterContext {
   queryClient?: QueryClient;
@@ -140,41 +144,37 @@ function RootComponent() {
    * Render
    */
 
-  if (pingServerQuery.isLoading) {
-    return (
-      <p>
-        ⌛ Acordando servidor...{" "}
-        {pingServerQuery.failureCount > 0 &&
-          `Tentativa ${pingServerQuery.failureCount}`}
-      </p>
-    );
-  }
-
-  if (pingServerQuery.isError) {
-    return <p>❌ O servidor não acordou! Tente novamente mais tarde.</p>;
-  }
-
-  if (isAuthenticating) {
-    return <p>🔐 Tentando autenticar usuário...</p>;
-  }
-
   return (
     <>
-      <div>
-        <Outlet />
+      <div className="h-screen text-black dark:text-white">
+        <AppBackground />
+
+        <div className="relative h-full p-4">
+          {pingServerQuery.isLoading && (
+            <LoadingScreen failureCount={pingServerQuery.failureCount} />
+          )}
+
+          {pingServerQuery.isError && <WakeUpErrorScreen />}
+
+          {isAuthenticating && <AuthenticatingScreen />}
+
+          {pingServerQuery.isSuccess && !isAuthenticating && <Outlet />}
+        </div>
       </div>
 
-      <TanStackRouterDevtools position="top-right" />
+      {/* <TanStackRouterDevtools position="top-right" /> */}
     </>
   );
 }
 
 function NotFoundComponent() {
   return (
-    <>
-      <h1>404</h1>
+    <main className="flex h-dvh flex-col items-center justify-center gap-4 text-center">
+      <h1 className="text-7xl font-bold">404</h1>
       <p>Ops... Esta página não existe!</p>
-      <Link to="/">Voltar para o início</Link>
-    </>
+      <Link to="/" className="font-bold text-sky-800 underline">
+        Voltar para o início
+      </Link>
+    </main>
   );
 }

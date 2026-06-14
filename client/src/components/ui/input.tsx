@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from "react";
+import { useState, type InputHTMLAttributes } from "react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -8,11 +8,39 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export function Input({ label, error, registration, ...props }: InputProps) {
+  const [inFocus, setInFocus] = useState(false);
+  const [hasValue, setHasValue] = useState(false);
+
   return (
-    <div>
-      <label htmlFor={registration.name}>{label}</label>
-      <input id={registration.name} {...registration} {...props} />
-      <p>{error}</p>
+    <div
+      className={`rounded-lg border-2 border-black dark:border-white ${inFocus ? "bg-sky-50 dark:bg-sky-950" : "bg-white dark:bg-black"} ${props.disabled ? "opacity-50" : "opacity-100"}`}
+    >
+      <label className={`relative block h-15 w-full rounded-lg`}>
+        <span
+          className={`absolute left-4 z-10 transition-all ${inFocus || hasValue ? "top-3 translate-y-0 text-xs" : "top-1/2 -translate-y-1/2 text-base"}`}
+        >
+          {label}
+        </span>
+
+        <input
+          className={`absolute bottom-3 left-4 w-[calc(100%-2rem)] text-base outline-none`}
+          {...registration}
+          {...props}
+          onChange={(e) => {
+            registration.onChange(e);
+            setHasValue(e.target.value.length > 0);
+          }}
+          onFocus={() => setInFocus(true)}
+          onBlur={(e) => {
+            registration.onBlur(e);
+            setInFocus(false);
+          }}
+        />
+
+        <span className="absolute top-0.5 right-0.5 rounded-sm bg-red-100 px-1 text-xs text-red-800 italic">
+          {error}
+        </span>
+      </label>
     </div>
   );
 }
