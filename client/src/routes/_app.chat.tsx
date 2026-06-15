@@ -42,16 +42,14 @@ function ChatComponent() {
   });
 
   return (
-    <>
-      <h1>Chat</h1>
+    <div className="flex h-full flex-col">
+      <MessagesList messageToEdit={messageToEdit} onEdit={setMessageToEdit} />
 
       <MessageForm
         messageToEdit={messageToEdit}
         onSubmitMessageChanges={updateMessageMutation.mutateAsync}
         updateMessageStatus={updateMessageMutation.status}
       />
-
-      <MessagesList messageToEdit={messageToEdit} onEdit={setMessageToEdit} />
-    </>
+    </div>
   );
 }

@@ -6,9 +6,11 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouteContext } from "@tanstack/react-router";
+import cn from "classnames";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { api } from "../api/instance";
+import { LoaderCircle, SendHorizontal } from "lucide-react";
 
 interface MessageFormProps {
   messageToEdit: MessageData | null;
@@ -21,14 +23,7 @@ export function MessageForm({
   onSubmitMessageChanges,
   updateMessageStatus,
 }: MessageFormProps) {
-  const {
-    formState: { errors },
-    handleSubmit,
-    register,
-    resetField,
-    setError,
-    setValue,
-  } = useForm({
+  const { handleSubmit, register, resetField, setError, setValue } = useForm({
     resolver: zodResolver(CreateMessageBody),
   });
 
@@ -61,12 +56,16 @@ export function MessageForm({
     },
   });
 
+  const isPending =
+    newMessageMutation.isPending || updateMessageStatus === "pending";
+
   useEffect(() => {
     setValue("content", messageToEdit?.content || "");
   }, [setValue, messageToEdit]);
 
   return (
     <form
+      className="flex gap-1 rounded-full border-3 border-black bg-white p-2"
       onSubmit={handleSubmit(({ content }) => {
         if (messageToEdit) {
           onSubmitMessageChanges({
@@ -80,14 +79,10 @@ export function MessageForm({
         newMessageMutation.mutateAsync({ content });
       })}
     >
-      <p>{errors.form?.message || errors.content?.message}</p>
-
-      <label htmlFor="message">
-        {messageToEdit ? "Editando mensagem" : "Nova mensagem"}
-      </label>
       <input
+        className="h-10 grow rounded-full border-2 border-black px-4 inset-shadow-sm placeholder:italic"
+        placeholder="Digite uma mensagem aqui"
         autoFocus
-        id="message"
         type="text"
         {...register("content", {
           disabled: newMessageMutation.isPending,
@@ -95,18 +90,18 @@ export function MessageForm({
       />
 
       <button
+        className={cn(
+          "flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-cyan-700 text-white shadow transition-colors hover:bg-cyan-600 focus:bg-cyan-600 active:bg-cyan-800",
+          isPending && "pointer-events-none opacity-50",
+        )}
         type="submit"
-        disabled={
-          newMessageMutation.isPending || updateMessageStatus === "pending"
-        }
+        disabled={isPending}
       >
-        {messageToEdit &&
-          (updateMessageStatus === "pending"
-            ? "Salvando alterações..."
-            : "Salvar alterações")}
-
-        {!messageToEdit &&
-          (newMessageMutation.isPending ? "Enviando..." : "Enviar")}
+        {isPending ? (
+          <LoaderCircle className="size-6 animate-spin" />
+        ) : (
+          <SendHorizontal className="h-6 w-fit" />
+        )}
       </button>
     </form>
   );

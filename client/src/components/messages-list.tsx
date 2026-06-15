@@ -61,7 +61,7 @@ export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
   );
 
   return (
-    <>
+    <div className="grow">
       <p>
         {isRefetching
           ? "⌛ Atualizando mensagens..."
@@ -95,7 +95,7 @@ export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
 
       {isFetchingNextPage && <span>⌛ Carregando próxima página...</span>}
       {!hasNextPage && <span>✅ Não há mais mensagens</span>}
-    </>
+    </div>
   );
 }
 

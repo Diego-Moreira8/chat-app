@@ -24,7 +24,7 @@ export function Header({ username }: HeaderProps) {
   });
 
   return (
-    <header className="flex items-center justify-between p-4">
+    <header className="flex items-center justify-between">
       <Logo forHeader />
 
       <span className="flex items-center gap-1 rounded-full bg-black/10 px-2 py-1">
