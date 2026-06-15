@@ -38,7 +38,7 @@ export function Button({
         "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-medium transition-all",
         variantClasses[variant],
         sizeClasses[size],
-        isDisabled ? "cursor-not-allowed opacity-50" : "",
+        isDisabled ? "pointer-events-none opacity-50" : "",
         className,
       ]
         .filter(Boolean)

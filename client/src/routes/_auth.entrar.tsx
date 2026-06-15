@@ -3,15 +3,15 @@
 import { errorCodes, LoginBody, type AccessToken } from "@chat-app/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { handleApiError } from "../api/handle-api-errors";
 import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
 import { Card } from "../components/ui/card";
-import { Logo } from "../components/logo";
 import { Button } from "../components/ui/button";
+import { Link } from "../components/ui/link";
 
 interface LoginSearchParams {
   alert?: string;
@@ -74,72 +74,62 @@ function LoginComponent() {
   });
 
   return (
-    <div className="flex flex-col gap-16">
-      <Logo />
+    <div className="flex h-full flex-col gap-4">
+      {alert && (
+        <Card centered color="alert" size="sm">
+          <p>{alert}</p>
+        </Card>
+      )}
 
-      <div className="flex h-full flex-col gap-8">
-        {alert && (
+      <h1 className="text-center text-4xl font-bold">Entrar</h1>
+
+      <p className="text-center">
+        Já tem uma conta?
+        <br />
+        Entre com suas credenciais e volte a conversar!
+      </p>
+
+      <form
+        className="flex flex-col gap-4 rounded-2xl border-3 border-black bg-white/50 p-4 shadow-md dark:border-white dark:bg-white/10"
+        onSubmit={handleSubmit((credentials) =>
+          postLoginMutation.mutateAsync(credentials),
+        )}
+      >
+        {errors.form?.message && (
           <Card centered color="alert" size="sm">
-            <p>{alert}</p>
+            <p>{errors.form?.message}</p>
           </Card>
         )}
 
-        <h1 className="text-center text-4xl font-bold">Entrar</h1>
+        <div className="flex flex-col gap-2">
+          <Input
+            autoFocus
+            type="text"
+            autoComplete="username"
+            label="Nome de usuário"
+            registration={register("username")}
+            error={errors.username?.message}
+            disabled={postLoginMutation.isPending}
+          />
 
-        <p className="text-center">
-          Já tem uma conta?
-          <br />
-          Entre com suas credenciais e volte a conversar!
-        </p>
+          <Input
+            type="password"
+            autoComplete="current-password"
+            label="Senha"
+            registration={register("password")}
+            error={errors.username?.message}
+            disabled={postLoginMutation.isPending}
+          />
+        </div>
 
-        <form
-          className="flex flex-col gap-4 rounded-2xl border-3 border-black bg-white/50 p-4 dark:border-white dark:bg-white/10"
-          onSubmit={handleSubmit((credentials) =>
-            postLoginMutation.mutateAsync(credentials),
-          )}
-        >
-          {errors.form?.message && (
-            <Card centered color="alert" size="sm">
-              <p>{errors.form?.message}</p>
-            </Card>
-          )}
+        <Button type="submit" loading={postLoginMutation.isPending}>
+          {postLoginMutation.isPending ? "Entrando..." : "Entrar"}
+        </Button>
+      </form>
 
-          <div className="flex flex-col gap-2">
-            <Input
-              autoFocus
-              type="text"
-              autoComplete="username"
-              label="Nome de usuário"
-              registration={register("username")}
-              error={errors.username?.message}
-              disabled={postLoginMutation.isPending}
-            />
-
-            <Input
-              type="password"
-              autoComplete="current-password"
-              label="Senha"
-              registration={register("password")}
-              error={errors.username?.message}
-              disabled={postLoginMutation.isPending}
-            />
-          </div>
-
-          <Button type="submit" loading={postLoginMutation.isPending}>
-            {postLoginMutation.isPaused ? "Entrando..." : "Entrar"}
-          </Button>
-        </form>
-
-        <p className="text-center">
-          Ainda não tem uma conta?{" "}
-          <Link
-            to="/criar-conta"
-            className="font-medium underline hover:text-cyan-800 dark:hover:text-cyan-200"
-          >
-            Registre-se
-          </Link>
-        </p>
-      </div>
+      <p className="text-center">
+        Ainda não tem uma conta? <Link to="/criar-conta">Registre-se</Link>
+      </p>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { Logo } from "../components/logo";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthRootComponent,
@@ -16,7 +17,11 @@ export const Route = createFileRoute("/_auth")({
 function AuthRootComponent() {
   return (
     <>
-      <Outlet />
+      <div className="flex flex-col gap-8">
+        <Logo />
+
+        <Outlet />
+      </div>
     </>
   );
 }

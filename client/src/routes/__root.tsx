@@ -146,7 +146,7 @@ function RootComponent() {
 
   return (
     <>
-      <div className="h-screen text-black dark:text-white">
+      <div className="h-svh text-black dark:text-white">
         <AppBackground />
 
         <div className="relative h-full p-4">
@@ -169,7 +169,7 @@ function RootComponent() {
 
 function NotFoundComponent() {
   return (
-    <main className="flex h-dvh flex-col items-center justify-center gap-4 text-center">
+    <main className="flex h-full flex-col items-center justify-center gap-4 text-center">
       <h1 className="text-7xl font-bold">404</h1>
       <p>Ops... Esta página não existe!</p>
       <Link to="/" className="font-bold text-cyan-800 underline">
