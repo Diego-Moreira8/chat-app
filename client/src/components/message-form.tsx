@@ -66,7 +66,7 @@ export function MessageForm({
   return (
     <div className="flex h-20 items-center justify-center px-2">
       <form
-        className="flex w-full gap-1 rounded-full border-3 border-black bg-white p-2"
+        className="flex w-full gap-1 rounded-full border-3 border-black bg-white p-2 shadow-xl/20 dark:border-white dark:bg-black"
         onSubmit={handleSubmit(({ content }) => {
           if (messageToEdit) {
             onSubmitMessageChanges({
@@ -81,7 +81,8 @@ export function MessageForm({
         })}
       >
         <input
-          className="h-10 grow rounded-full border-2 border-black px-4 inset-shadow-sm placeholder:italic"
+          className="h-10 grow rounded-full border-2 border-black px-4 inset-shadow-sm outline-none placeholder:italic dark:border-white"
+          autoComplete="off"
           placeholder="Digite uma mensagem aqui"
           autoFocus
           type="text"

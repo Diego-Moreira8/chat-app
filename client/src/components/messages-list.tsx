@@ -105,17 +105,26 @@ function Message({ messageData, messageToEdit, onEdit }: MessageProps) {
   return (
     <li
       className={cn(
-        "flex w-fit gap-2 rounded-lg border-2 border-black px-4 py-2",
+        "flex w-fit gap-2 rounded-lg border-2 border-black px-4 py-2 shadow-md dark:border-white",
         sentByCurrentUser
-          ? "self-end rounded-br-none bg-cyan-600 text-right text-white"
-          : "rounded-tl-none bg-white text-left",
+          ? "self-end rounded-br-none bg-cyan-800 text-right text-white"
+          : "rounded-tl-none bg-white text-left dark:bg-black",
       )}
     >
       {/* Options */}
       {sentByCurrentUser && !deletedAt && (
-        <div className="flex h-full items-center gap-1 text-black">
+        <div className="flex h-full items-center gap-1 text-black dark:text-white">
           <button
-            className="flex size-6 cursor-pointer items-center justify-center rounded-full bg-white shadow hover:bg-sky-100 focus:bg-sky-100 active:bg-sky-800 active:text-white"
+            className={cn(
+              "flex size-6 cursor-pointer items-center justify-center rounded-full shadow",
+              "active:text-white",
+              "bg-white dark:bg-black",
+              "hover:bg-red-200 dark:hover:bg-red-800",
+              "focus:bg-red-200 dark:focus:bg-red-800",
+              "active:bg-red-300 dark:active:bg-red-900",
+              deleteMessageMutation.isPending &&
+                "pointer-events-none opacity-50",
+            )}
             onClick={() => deleteMessageMutation.mutateAsync({ id })}
             type="button"
             disabled={deleteMessageMutation.isPending}
@@ -129,7 +138,12 @@ function Message({ messageData, messageToEdit, onEdit }: MessageProps) {
 
           <button
             className={cn(
-              "flex size-6 cursor-pointer items-center justify-center rounded-full bg-white shadow hover:bg-sky-100 focus:bg-sky-100 active:bg-sky-800 active:text-white",
+              "flex size-6 cursor-pointer items-center justify-center rounded-full shadow",
+              "active:text-white",
+              "bg-white dark:bg-black",
+              "hover:bg-sky-200 dark:hover:bg-sky-900",
+              "focus:bg-sky-200 dark:focus:bg-sky-900",
+              "active:bg-sky-300 dark:active:bg-sky-950",
               isEditingCurrentMessage && "pointer-events-none opacity-50",
             )}
             onClick={() => onEdit(messageData)}
