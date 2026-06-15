@@ -36,10 +36,7 @@ function RegisterComponent() {
     onSuccess: () => {
       navigate({
         to: "/entrar",
-        search: {
-          alert:
-            "Usuário criado com sucesso! Você pode entrar com suas credenciais agora.",
-        },
+        search: { alert: "REGISTRATION_SUCCESS" },
       });
     },
     onError: (error) => {
@@ -73,7 +70,7 @@ function RegisterComponent() {
         className="flex flex-col gap-4 rounded-2xl border-3 border-black bg-white/50 p-4 shadow-md dark:border-white dark:bg-white/10"
         onSubmit={handleSubmit((credentials) => mutateAsync(credentials))}
       >
-        <p>{errors.form?.message}</p>
+        <p className="text-center">{errors.form?.message}</p>
 
         <div className="flex flex-col gap-2">
           <Input

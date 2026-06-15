@@ -13,15 +13,17 @@ import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Link } from "../components/ui/link";
 
+type Alert = "REGISTRATION_SUCCESS" | "SESSION_EXPIRED";
+
 interface LoginSearchParams {
-  alert?: string;
+  alert?: Alert;
 }
 
 export const Route = createFileRoute("/_auth/entrar")({
   component: LoginComponent,
   validateSearch: (search: Record<string, unknown>): LoginSearchParams => {
     return {
-      alert: (search.alert as string) || "",
+      alert: (search.alert as Alert) || "",
     };
   },
 });
@@ -73,11 +75,22 @@ function LoginComponent() {
     },
   });
 
+  const alertMessages = {
+    REGISTRATION_SUCCESS:
+      "Sua conta foi criada! Você pode entrar com ela agora.",
+    SESSION_EXPIRED:
+      "Sua sessão expirou! Entre com suas credenciais novamente.",
+  };
+
   return (
     <div className="flex h-full flex-col gap-4">
       {alert && (
-        <Card centered color="alert" size="sm">
-          <p>{alert}</p>
+        <Card
+          centered
+          color={alert === "REGISTRATION_SUCCESS" ? "success" : "alert"}
+          size="sm"
+        >
+          <p className="text-center">{alertMessages[alert]}</p>
         </Card>
       )}
 
@@ -97,7 +110,7 @@ function LoginComponent() {
       >
         {errors.form?.message && (
           <Card centered color="alert" size="sm">
-            <p>{errors.form?.message}</p>
+            <p className="text-center">{errors.form?.message}</p>
           </Card>
         )}
 

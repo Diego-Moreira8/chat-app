@@ -131,9 +131,7 @@ function RootComponent() {
     } else if (forcedLogout) {
       navigate({
         to: "/entrar",
-        search: {
-          alert: "Sua sessão expirou! Entre com suas credenciais novamente.",
-        },
+        search: { alert: "SESSION_EXPIRED" },
       });
     } else {
       navigate({ to: "/entrar" });

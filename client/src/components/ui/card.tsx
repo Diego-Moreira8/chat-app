@@ -3,7 +3,7 @@ import type React from "react";
 
 interface CardProps {
   centered?: boolean;
-  color?: "default" | "alert";
+  color?: "default" | "alert" | "success";
   size?: "sm" | "md";
   children: React.ReactNode;
 }
@@ -18,6 +18,8 @@ export function Card({
     default: "border-black bg-white/50 dark:border-white dark:bg-black/50",
     alert:
       "border-yellow-600 bg-yellow-100/50 dark:border-yellow-500 dark:bg-yellow-900/50",
+    success:
+      "border-green-600 bg-green-100/50 dark:border-green-500 dark:bg-green-900/50",
   };
 
   const sizeClasses = {
