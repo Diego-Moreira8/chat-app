@@ -4,6 +4,7 @@ import { useRouteContext } from "@tanstack/react-router";
 import type React from "react";
 import { MessageBalloon } from "./message-balloon";
 import { api } from "../api/instance";
+import { useEffect, useRef } from "react";
 
 interface MessagesListProps {
   messageToEdit: MessageData | null;
@@ -11,6 +12,9 @@ interface MessagesListProps {
 }
 
 export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
+  const isFirstLoad = useRef(true);
+  const messageListRef = useRef<HTMLDivElement | null>(null);
+
   const { queryClient } = useRouteContext({ from: "/_app" });
 
   const { data } = useInfiniteQuery({
@@ -38,8 +42,25 @@ export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
     .flatMap((page) => page.data)
     .sort((a, b) => a.id - b.id);
 
+  /**
+   * Scroll down on first load
+   */
+  useEffect(() => {
+    const container = messageListRef.current;
+    if (!container || !data) return;
+
+    if (isFirstLoad.current) {
+      container.scrollTo({ top: container.scrollHeight });
+      isFirstLoad.current = false;
+      return;
+    }
+  }, [data]);
+
   return (
-    <div className="flex h-[calc(100%-5rem)] flex-col gap-2 overflow-y-scroll p-4">
+    <div
+      className="flex h-[calc(100%-5rem)] flex-col gap-2 overflow-y-scroll p-4"
+      ref={messageListRef}
+    >
       {messagesData && (
         <ul className="flex flex-col gap-2">
           {messagesData.map((msg) => (
