@@ -1,7 +1,9 @@
 import type { MessageDataResponse, MessageData } from "@chat-app/shared";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { useRouteContext } from "@tanstack/react-router";
+import cn from "classnames";
 import { api } from "../api/instance";
+import { LoaderCircle, Pencil, Trash2 } from "lucide-react";
 
 interface MessagesListProps {
   messageToEdit: MessageData | null;
@@ -17,15 +19,7 @@ interface MessageProps {
 export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
   const { queryClient } = useRouteContext({ from: "/_app" });
 
-  const {
-    data,
-    isLoading,
-    isRefetching,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-    isError,
-  } = useInfiniteQuery({
+  const { data } = useInfiniteQuery({
     queryKey: ["messages"],
     staleTime: 5000,
     refetchInterval: 5000,
@@ -47,25 +41,13 @@ export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
   });
 
   const messagesData = data?.pages
-    .flatMap((page) =>
-      page.data.map((msg) => ({
-        ...msg,
-        createdAt: new Date(msg.createdAt).toLocaleDateString("pt-BR", {
-          year: "2-digit",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        }),
-      })),
-    )
-    .sort((a, b) => (a.id > b.id ? 1 : -1));
+    .flatMap((page) => page.data.map((msg) => ({ ...msg })))
+    .sort((a, b) => a.id - b.id);
 
   return (
     <div className="flex h-[calc(100%-5rem)] flex-col gap-2 overflow-y-scroll p-4">
       {messagesData && (
-        <ul className="">
+        <ul className="flex flex-col gap-2">
           {messagesData.map((msg) => (
             <Message
               key={msg.id}
@@ -108,40 +90,70 @@ function Message({ messageData, messageToEdit, onEdit }: MessageProps) {
     },
   });
 
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  };
+
+  const sentByCurrentUser = owner.username === userData.user.username;
+
   return (
-    <li>
-      <p>
-        <i>
-          #{id} <b>{owner.username}</b> em {createdAt}{" "}
-          {updatedAt && !deletedAt && "(editada)"}
-        </i>
-      </p>
-
-      <p>{deletedAt ? <i>[Mensagem apagada]</i> : content}</p>
-
-      {owner.username === userData.user.username && !deletedAt && (
-        <div>
-          <span>Opções: </span>
-
+    <li
+      className={cn(
+        "flex w-fit gap-2 rounded-lg border-2 border-black px-4 py-2",
+        sentByCurrentUser
+          ? "self-end rounded-br-none bg-cyan-600 text-right text-white"
+          : "rounded-tl-none bg-white text-left",
+      )}
+    >
+      {/* Options */}
+      {sentByCurrentUser && !deletedAt && (
+        <div className="flex h-full items-center gap-1 text-black">
           <button
+            className="flex size-6 cursor-pointer items-center justify-center rounded-full bg-white shadow hover:bg-sky-100 focus:bg-sky-100 active:bg-sky-800 active:text-white"
             onClick={() => deleteMessageMutation.mutateAsync({ id })}
             type="button"
             disabled={deleteMessageMutation.isPending}
           >
-            {deleteMessageMutation.isPending ? "⌛ Apagando..." : "Apagar"}
+            {deleteMessageMutation.isPending ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <Trash2 className="h-4" />
+            )}
           </button>
 
           <button
+            className={cn(
+              "flex size-6 cursor-pointer items-center justify-center rounded-full bg-white shadow hover:bg-sky-100 focus:bg-sky-100 active:bg-sky-800 active:text-white",
+              isEditingCurrentMessage && "pointer-events-none opacity-50",
+            )}
             onClick={() => onEdit(messageData)}
             type="button"
             disabled={isEditingCurrentMessage}
           >
-            {isEditingCurrentMessage ? "Editando" : "Editar"}
+            <Pencil className="h-4" />
           </button>
         </div>
       )}
 
-      <hr />
+      <div>
+        {/* Info */}
+        <span className="text-xs font-light italic">
+          <span className="font-medium">
+            {sentByCurrentUser ? "Você" : owner.username}
+          </span>{" "}
+          em {formatDate(new Date(createdAt))}{" "}
+          {updatedAt && !deletedAt && "(editada)"}
+        </span>
+
+        {/* Content */}
+        <p>{deletedAt ? <i>[Mensagem apagada]</i> : content}</p>
+      </div>
     </li>
   );
 }

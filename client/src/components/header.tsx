@@ -30,7 +30,7 @@ export function Header({ username }: HeaderProps) {
       <div className="flex items-center gap-1 rounded-full bg-black/10 px-4 py-1">
         <UserRound className="h-5 w-fit" />
 
-        <div className="flex flex-col justify-center text-xs leading-2.5 font-medium">
+        <div className="flex flex-col justify-center text-xs leading-3 font-medium">
           <span>{username}</span>
 
           {/* TODO */}
