@@ -147,7 +147,7 @@ function RootComponent() {
       <div className="h-svh text-black dark:text-white">
         <AppBackground />
 
-        <div className="relative h-full p-4">
+        <div className="relative h-full">
           {pingServerQuery.isLoading && (
             <LoadingScreen failureCount={pingServerQuery.failureCount} />
           )}

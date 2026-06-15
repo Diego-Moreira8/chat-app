@@ -8,7 +8,7 @@ export function LaunchScreenContainer({
   children,
 }: LaunchScreenContainerProps) {
   return (
-    <div className="flex h-full items-center justify-center">
+    <div className="flex h-full items-center justify-center p-4">
       <Card>
         <div className="flex max-w-md flex-col gap-2 text-center">
           {children}

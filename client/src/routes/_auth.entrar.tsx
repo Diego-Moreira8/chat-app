@@ -11,7 +11,7 @@ import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Link } from "../components/ui/link";
+import { AppLink } from "../components/ui/link";
 
 type Alert = "REGISTRATION_SUCCESS" | "SESSION_EXPIRED" | "UNAUTHORIZED";
 
@@ -142,7 +142,8 @@ function LoginComponent() {
       </form>
 
       <p className="text-center">
-        Ainda não tem uma conta? <Link to="/criar-conta">Registre-se</Link>
+        Ainda não tem uma conta?{" "}
+        <AppLink to="/criar-conta">Registre-se</AppLink>
       </p>
     </div>
   );

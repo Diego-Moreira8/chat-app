@@ -36,9 +36,9 @@ function AppRootComponent() {
   const { userData } = Route.useRouteContext();
 
   return (
-    <>
-      <Header userData={userData} />
+    <div>
+      <Header username={userData.user.username} />
       <Outlet />
-    </>
+    </div>
   );
 }

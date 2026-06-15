@@ -2,6 +2,7 @@
 
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Logo } from "../components/logo";
+import { ExternalLink } from "../components/ui/link";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthRootComponent,
@@ -16,12 +17,18 @@ export const Route = createFileRoute("/_auth")({
 
 function AuthRootComponent() {
   return (
-    <>
-      <div className="flex flex-col gap-8">
-        <Logo />
-
-        <Outlet />
-      </div>
-    </>
+    <div className="flex flex-col gap-8 p-4">
+      <Logo />
+      <Outlet />
+      <footer>
+        <p className="text-center">
+          App criado por{" "}
+          <ExternalLink href="https://diegowebdev.com.br">
+            Diego Moreira
+          </ExternalLink>{" "}
+          em 2026
+        </p>
+      </footer>
+    </div>
   );
 }

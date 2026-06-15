@@ -10,7 +10,7 @@ import { api } from "../api/instance";
 import { Input } from "../components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "../components/ui/button";
-import { Link } from "../components/ui/link";
+import { AppLink } from "../components/ui/link";
 
 export const Route = createFileRoute("/_auth/criar-conta")({
   component: RegisterComponent,
@@ -99,7 +99,7 @@ function RegisterComponent() {
       </form>
 
       <p className="text-center">
-        Já tem uma conta? <Link to="/entrar">Entrar</Link>
+        Já tem uma conta? <AppLink to="/entrar">Entrar</AppLink>
       </p>
     </div>
   );

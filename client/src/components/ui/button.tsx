@@ -1,14 +1,17 @@
 import cn from "classnames";
 import { LoaderCircle } from "lucide-react";
 import type { ButtonHTMLAttributes } from "react";
+import { type LucideIcon } from "lucide-react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  Icon?: LucideIcon;
   loading?: boolean;
   size?: "sm" | "md" | "lg";
   variant?: "default" | "danger";
 }
 
 export function Button({
+  Icon,
   loading = false,
   size = "md",
   variant = "default",
@@ -44,7 +47,12 @@ export function Button({
       )}
       {...props}
     >
-      {loading && <LoaderCircle className="size-4 animate-spin" />}
+      {loading ? (
+        <LoaderCircle className="size-4 animate-spin" />
+      ) : (
+        Icon && <Icon className="h-4 w-fit" />
+      )}
+
       {children}
     </button>
   );

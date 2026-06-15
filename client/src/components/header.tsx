@@ -1,13 +1,15 @@
-import { type UserData } from "@chat-app/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { api } from "../api/instance";
+import { Logo } from "./logo";
+import { Button } from "./ui/button";
+import { LogOut, UserRound } from "lucide-react";
 
 interface HeaderProps {
-  userData?: UserData;
+  username: string;
 }
 
-export function Header({ userData }: HeaderProps) {
+export function Header({ username }: HeaderProps) {
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
@@ -22,46 +24,22 @@ export function Header({ userData }: HeaderProps) {
   });
 
   return (
-    <header>
-      <span>CHAT APP</span>
+    <header className="flex items-center justify-between p-4">
+      <Logo forHeader />
 
-      <p>{userData ? userData.user.username : "Não autenticado"}</p>
+      <span className="flex items-center gap-1 rounded-full bg-black/10 px-2 py-1">
+        <UserRound className="h-4 w-fit" /> <span>{username}</span>
+      </span>
 
-      <nav>
-        <ul>
-          <li>
-            <Link to="/" activeProps={{ style: { fontWeight: "bold" } }}>
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link to="/entrar" activeProps={{ style: { fontWeight: "bold" } }}>
-              Entrar
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/criar-conta"
-              activeProps={{ style: { fontWeight: "bold" } }}
-            >
-              Criar conta
-            </Link>
-          </li>
-          <li>
-            <Link to="/chat" activeProps={{ style: { fontWeight: "bold" } }}>
-              Chat
-            </Link>
-          </li>
-        </ul>
-
-        <button
-          type="button"
-          onClick={() => logoutMutation.mutateAsync()}
-          disabled={logoutMutation.isPending}
-        >
-          {logoutMutation.isPending ? "Saindo..." : "Sair"}
-        </button>
-      </nav>
+      <Button
+        Icon={LogOut}
+        type="button"
+        size="sm"
+        onClick={() => logoutMutation.mutateAsync()}
+        loading={logoutMutation.isPending}
+      >
+        {logoutMutation.isPending ? "Saindo..." : "Sair"}
+      </Button>
     </header>
   );
 }

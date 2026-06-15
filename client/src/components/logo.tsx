@@ -1,6 +1,17 @@
-export function Logo() {
+import cn from "classnames";
+
+interface LogoProps {
+  forHeader?: boolean;
+}
+
+export function Logo({ forHeader = false }: LogoProps) {
   return (
-    <div className="pointer-events-none mx-auto text-2xl font-black italic select-none">
+    <div
+      className={cn(
+        "pointer-events-none text-2xl font-black italic select-none",
+        forHeader ? "" : "mx-auto",
+      )}
+    >
       ChatApp
     </div>
   );
