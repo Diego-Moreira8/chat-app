@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_app")({
     if (!accessToken || !userData) {
       throw redirect({
         to: "/entrar",
-        search: { alert: "Você precisa entrar para acessar o chat." },
+        search: { alert: "UNAUTHORIZED" },
       });
     }
 

@@ -13,7 +13,7 @@ import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Link } from "../components/ui/link";
 
-type Alert = "REGISTRATION_SUCCESS" | "SESSION_EXPIRED";
+type Alert = "REGISTRATION_SUCCESS" | "SESSION_EXPIRED" | "UNAUTHORIZED";
 
 interface LoginSearchParams {
   alert?: Alert;
@@ -80,6 +80,7 @@ function LoginComponent() {
       "Sua conta foi criada! Você pode entrar com ela agora.",
     SESSION_EXPIRED:
       "Sua sessão expirou! Entre com suas credenciais novamente.",
+    UNAUTHORIZED: "Você precisa entrar para acessar o chat!",
   };
 
   return (
