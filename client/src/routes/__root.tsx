@@ -172,7 +172,7 @@ function NotFoundComponent() {
     <main className="flex h-dvh flex-col items-center justify-center gap-4 text-center">
       <h1 className="text-7xl font-bold">404</h1>
       <p>Ops... Esta página não existe!</p>
-      <Link to="/" className="font-bold text-sky-800 underline">
+      <Link to="/" className="font-bold text-cyan-800 underline">
         Voltar para o início
       </Link>
     </main>

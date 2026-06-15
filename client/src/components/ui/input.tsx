@@ -13,7 +13,7 @@ export function Input({ label, error, registration, ...props }: InputProps) {
 
   return (
     <div
-      className={`rounded-lg border-2 border-black dark:border-white ${inFocus ? "bg-sky-50 dark:bg-sky-950" : "bg-white dark:bg-black"} ${props.disabled ? "opacity-50" : "opacity-100"}`}
+      className={`rounded-lg border-2 border-black shadow-md dark:border-white ${inFocus ? "bg-cyan-50 dark:bg-cyan-950" : "bg-white dark:bg-black"} ${props.disabled ? "opacity-50" : "opacity-100"}`}
     >
       <label className={`relative block h-15 w-full rounded-lg`}>
         <span
@@ -37,7 +37,7 @@ export function Input({ label, error, registration, ...props }: InputProps) {
           }}
         />
 
-        <span className="absolute top-0.5 right-0.5 rounded-sm bg-red-100 px-1 text-xs text-red-800 italic">
+        <span className="absolute top-0.5 right-0.5 rounded-sm bg-red-100 px-1 text-xs text-red-800 italic dark:bg-red-900 dark:text-red-100">
           {error}
         </span>
       </label>
