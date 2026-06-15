@@ -36,12 +36,9 @@ function AppRootComponent() {
   const { userData } = Route.useRouteContext();
 
   return (
-    <div className="flex h-full flex-col gap-4 p-4">
+    <div className="flex h-full flex-col">
       <Header username={userData.user.username} />
-
-      <div className="grow">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 }

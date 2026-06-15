@@ -64,45 +64,47 @@ export function MessageForm({
   }, [setValue, messageToEdit]);
 
   return (
-    <form
-      className="flex gap-1 rounded-full border-3 border-black bg-white p-2"
-      onSubmit={handleSubmit(({ content }) => {
-        if (messageToEdit) {
-          onSubmitMessageChanges({
-            ...messageToEdit,
-            content,
-          });
+    <div className="flex h-20 items-center justify-center px-2">
+      <form
+        className="flex w-full gap-1 rounded-full border-3 border-black bg-white p-2"
+        onSubmit={handleSubmit(({ content }) => {
+          if (messageToEdit) {
+            onSubmitMessageChanges({
+              ...messageToEdit,
+              content,
+            });
 
-          return;
-        }
+            return;
+          }
 
-        newMessageMutation.mutateAsync({ content });
-      })}
-    >
-      <input
-        className="h-10 grow rounded-full border-2 border-black px-4 inset-shadow-sm placeholder:italic"
-        placeholder="Digite uma mensagem aqui"
-        autoFocus
-        type="text"
-        {...register("content", {
-          disabled: newMessageMutation.isPending,
+          newMessageMutation.mutateAsync({ content });
         })}
-      />
-
-      <button
-        className={cn(
-          "flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-cyan-700 text-white shadow transition-colors hover:bg-cyan-600 focus:bg-cyan-600 active:bg-cyan-800",
-          isPending && "pointer-events-none opacity-50",
-        )}
-        type="submit"
-        disabled={isPending}
       >
-        {isPending ? (
-          <LoaderCircle className="size-6 animate-spin" />
-        ) : (
-          <SendHorizontal className="h-6 w-fit" />
-        )}
-      </button>
-    </form>
+        <input
+          className="h-10 grow rounded-full border-2 border-black px-4 inset-shadow-sm placeholder:italic"
+          placeholder="Digite uma mensagem aqui"
+          autoFocus
+          type="text"
+          {...register("content", {
+            disabled: newMessageMutation.isPending,
+          })}
+        />
+
+        <button
+          className={cn(
+            "flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-cyan-700 text-white shadow transition-colors hover:bg-cyan-600 focus:bg-cyan-600 active:bg-cyan-800",
+            isPending && "pointer-events-none opacity-50",
+          )}
+          type="submit"
+          disabled={isPending}
+        >
+          {isPending ? (
+            <LoaderCircle className="size-6 animate-spin" />
+          ) : (
+            <SendHorizontal className="h-6 w-fit" />
+          )}
+        </button>
+      </form>
+    </div>
   );
 }

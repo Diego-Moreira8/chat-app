@@ -46,34 +46,26 @@ export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
-  const messagesData = data?.pages.flatMap((page) =>
-    page.data.map((msg) => ({
-      ...msg,
-      createdAt: new Date(msg.createdAt).toLocaleDateString("pt-BR", {
-        year: "2-digit",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }),
-    })),
-  );
+  const messagesData = data?.pages
+    .flatMap((page) =>
+      page.data.map((msg) => ({
+        ...msg,
+        createdAt: new Date(msg.createdAt).toLocaleDateString("pt-BR", {
+          year: "2-digit",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+      })),
+    )
+    .sort((a, b) => (a.id > b.id ? 1 : -1));
 
   return (
-    <div className="grow">
-      <p>
-        {isRefetching
-          ? "⌛ Atualizando mensagens..."
-          : "✅ Aguardando para atualizar mensagens"}
-      </p>
-
-      {isError && <p>❌ Houve um erro ao carregar as mensagens!</p>}
-
-      {isLoading && <p>⌛ Carregando mensagens...</p>}
-
+    <div className="flex h-[calc(100%-5rem)] flex-col gap-2 overflow-y-scroll p-4">
       {messagesData && (
-        <ul>
+        <ul className="">
           {messagesData.map((msg) => (
             <Message
               key={msg.id}
@@ -84,17 +76,6 @@ export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
           ))}
         </ul>
       )}
-
-      <button
-        onClick={() => fetchNextPage()}
-        type="button"
-        disabled={isFetchingNextPage || !hasNextPage}
-      >
-        Carregar mais
-      </button>
-
-      {isFetchingNextPage && <span>⌛ Carregando próxima página...</span>}
-      {!hasNextPage && <span>✅ Não há mais mensagens</span>}
     </div>
   );
 }

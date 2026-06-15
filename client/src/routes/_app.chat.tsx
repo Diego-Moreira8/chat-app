@@ -42,7 +42,8 @@ function ChatComponent() {
   });
 
   return (
-    <div className="flex h-full flex-col">
+    // Height = full - header height
+    <div className="h-[calc(100%-3rem)]">
       <MessagesList messageToEdit={messageToEdit} onEdit={setMessageToEdit} />
 
       <MessageForm

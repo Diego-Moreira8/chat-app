@@ -24,17 +24,24 @@ export function Header({ username }: HeaderProps) {
   });
 
   return (
-    <header className="flex items-center justify-between">
+    <header className="flex max-h-12 min-h-12 items-center justify-between px-2">
       <Logo forHeader />
 
-      <span className="flex items-center gap-1 rounded-full bg-black/10 px-2 py-1">
-        <UserRound className="h-4 w-fit" /> <span>{username}</span>
-      </span>
+      <div className="flex items-center gap-1 rounded-full bg-black/10 px-4 py-1">
+        <UserRound className="h-5 w-fit" />
+
+        <div className="flex flex-col justify-center text-xs leading-2.5 font-medium">
+          <span>{username}</span>
+
+          {/* TODO */}
+          <span className="text-[0.5rem]">{"X"} mensagens</span>
+        </div>
+      </div>
 
       <Button
         Icon={LogOut}
         type="button"
-        size="sm"
+        size="xs"
         onClick={() => logoutMutation.mutateAsync()}
         loading={logoutMutation.isPending}
       >

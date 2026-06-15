@@ -8,8 +8,8 @@ export function Logo({ forHeader = false }: LogoProps) {
   return (
     <div
       className={cn(
-        "pointer-events-none text-2xl font-black italic select-none",
-        forHeader ? "" : "mx-auto",
+        "pointer-events-none font-black italic select-none",
+        forHeader ? "text-xl" : "mx-auto text-2xl",
       )}
     >
       ChatApp

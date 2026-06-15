@@ -6,7 +6,7 @@ import { type LucideIcon } from "lucide-react";
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   Icon?: LucideIcon;
   loading?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   variant?: "default" | "danger";
 }
 
@@ -28,9 +28,10 @@ export function Button({
   };
 
   const sizeClasses = {
-    sm: "px-3 py-1.5 text-sm shadow",
-    md: "px-5 py-2.5 text-base shadow-md",
-    lg: "px-7 py-3.5 text-lg shadow-lg",
+    xs: "px-1 py-0.5 gap-1 text-xs shadow-xs",
+    sm: "px-3 py-1.5 gap-2 text-sm shadow",
+    md: "px-5 py-2.5 gap-2 text-base shadow-md",
+    lg: "px-7 py-3.5 gap-2 text-lg shadow-lg",
   };
 
   const isDisabled = disabled || loading;
@@ -39,7 +40,7 @@ export function Button({
     <button
       disabled={isDisabled}
       className={cn(
-        "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-medium transition-all",
+        "inline-flex cursor-pointer items-center justify-center rounded-lg font-medium transition-all",
         variantClasses[variant],
         sizeClasses[size],
         isDisabled && "pointer-events-none opacity-50",
