@@ -1,3 +1,4 @@
+import cn from "classnames";
 import type React from "react";
 
 interface CardProps {
@@ -26,7 +27,12 @@ export function Card({
 
   return (
     <div
-      className={`w-fit ${sizeClasses[size]} ${variantClasses[color]} ${centered ? "mx-auto" : ""}`}
+      className={cn(
+        "w-fit",
+        sizeClasses[size],
+        variantClasses[color],
+        centered && "mx-auto",
+      )}
     >
       {children}
     </div>

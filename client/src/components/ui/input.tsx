@@ -1,3 +1,4 @@
+import cn from "classnames";
 import { useState, type InputHTMLAttributes } from "react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
@@ -13,17 +14,26 @@ export function Input({ label, error, registration, ...props }: InputProps) {
 
   return (
     <div
-      className={`rounded-lg border-2 border-black shadow-md dark:border-white ${inFocus ? "bg-cyan-50 dark:bg-cyan-950" : "bg-white dark:bg-black"} ${props.disabled ? "opacity-50" : "opacity-100"}`}
+      className={cn(
+        "rounded-lg border-2 border-black shadow-md dark:border-white",
+        inFocus ? "bg-cyan-50 dark:bg-cyan-950" : "bg-white dark:bg-black",
+        props.disabled ? "opacity-50" : "opacity-100",
+      )}
     >
-      <label className={`relative block h-15 w-full rounded-lg`}>
+      <label className="relative block h-15 w-full rounded-lg">
         <span
-          className={`absolute left-4 z-10 transition-all ${inFocus || hasValue ? "top-3 translate-y-0 text-xs" : "top-1/2 -translate-y-1/2 text-base"}`}
+          className={cn(
+            "absolute left-4 z-10 transition-all",
+            inFocus || hasValue
+              ? "top-3 translate-y-0 text-xs"
+              : "top-1/2 -translate-y-1/2 text-base",
+          )}
         >
           {label}
         </span>
 
         <input
-          className={`absolute bottom-3 left-4 w-[calc(100%-2rem)] text-base outline-none`}
+          className="absolute bottom-3 left-4 w-[calc(100%-2rem)] text-base outline-none"
           {...registration}
           {...props}
           onChange={(e) => {

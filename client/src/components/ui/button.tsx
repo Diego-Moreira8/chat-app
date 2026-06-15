@@ -1,3 +1,4 @@
+import cn from "classnames";
 import { LoaderCircle } from "lucide-react";
 import type { ButtonHTMLAttributes } from "react";
 
@@ -34,15 +35,13 @@ export function Button({
   return (
     <button
       disabled={isDisabled}
-      className={[
+      className={cn(
         "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-medium transition-all",
         variantClasses[variant],
         sizeClasses[size],
-        isDisabled ? "pointer-events-none opacity-50" : "",
+        isDisabled && "pointer-events-none opacity-50",
         className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      )}
       {...props}
     >
       {loading && <LoaderCircle className="size-4 animate-spin" />}
