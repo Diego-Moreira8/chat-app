@@ -8,12 +8,18 @@ import { useEffect, useRef } from "react";
 
 interface MessagesListProps {
   messageToEdit: MessageData | null;
+  shouldScrollDown: React.RefObject<boolean>;
   onEdit: React.Dispatch<React.SetStateAction<MessageData | null>>;
 }
 
-export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
+export function MessagesList({
+  messageToEdit,
+  shouldScrollDown,
+  onEdit,
+}: MessagesListProps) {
+  const messageListContainerRef = useRef<HTMLDivElement | null>(null);
   const isFirstLoad = useRef(true);
-  const messageListRef = useRef<HTMLDivElement | null>(null);
+  const lastData = useRef<MessageData[] | null>(null);
 
   const { queryClient } = useRouteContext({ from: "/_app" });
 
@@ -43,23 +49,33 @@ export function MessagesList({ messageToEdit, onEdit }: MessagesListProps) {
     .sort((a, b) => a.id - b.id);
 
   /**
-   * Scroll down on first load
+   * Scroll to last message when data changes and
+   * shouldScrollDown was changed to true.
    */
   useEffect(() => {
-    const container = messageListRef.current;
-    if (!container || !data) return;
+    const container = messageListContainerRef.current;
+    const dataChanged = lastData.current !== messagesData;
 
-    if (isFirstLoad.current) {
-      container.scrollTo({ top: container.scrollHeight });
-      isFirstLoad.current = false;
-      return;
+    if (isFirstLoad.current || dataChanged) {
+      shouldScrollDown.current = true;
     }
+
+    if (!container || !data || !shouldScrollDown.current) return;
+
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: isFirstLoad.current ? "instant" : "smooth",
+    });
+
+    if (isFirstLoad.current) isFirstLoad.current = false;
+    lastData.current = messagesData || null;
+    shouldScrollDown.current = false;
   }, [data]);
 
   return (
     <div
       className="flex h-[calc(100%-5rem)] flex-col gap-2 overflow-y-scroll p-4"
-      ref={messageListRef}
+      ref={messageListContainerRef}
     >
       {messagesData && (
         <ul className="flex flex-col gap-2">

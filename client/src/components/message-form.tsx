@@ -14,14 +14,16 @@ import { LoaderCircle, SendHorizontal } from "lucide-react";
 
 interface MessageFormProps {
   messageToEdit: MessageData | null;
-  onSubmitMessageChanges: (newData: MessageData) => void;
+  shouldScrollDown: React.RefObject<boolean>;
   updateMessageStatus: "error" | "idle" | "pending" | "success";
+  onSubmitMessageChanges: (newData: MessageData) => void;
 }
 
 export function MessageForm({
   messageToEdit,
-  onSubmitMessageChanges,
+  shouldScrollDown,
   updateMessageStatus,
+  onSubmitMessageChanges,
 }: MessageFormProps) {
   const { handleSubmit, register, resetField, setError, setValue } = useForm({
     resolver: zodResolver(CreateMessageBody),
@@ -46,6 +48,7 @@ export function MessageForm({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["messages"] });
+      shouldScrollDown.current = true;
       resetField("content");
     },
     onError: () => {
